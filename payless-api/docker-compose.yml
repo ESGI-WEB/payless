@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - db-data:/data/db
+    working_dir: /usr/local/sampleCollections
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  server:
+    image: node
+    environment:
+      DATABASE_URL: postgres://root:password@db:5432/app
+      JWT_SECRET: HhJK7!hjjh!jg2addMJ78bj
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npm run build
+
+volumes:
+  db-data: {}
+  pg-data: {}

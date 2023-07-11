@@ -9,6 +9,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 app.use(errorHandler);
+
 app.use(function (req, res, next) {
   if (["POST", "PUT", "PATCH"].includes(req.method)) {
     if (!req.is("application/json")) {
@@ -18,12 +19,8 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(require("./routes/security")(userService));
-app.get("/ping", (req, res) => {
-  res.send("pong");
+app.use("/users", new GenericRouter(new GenericController(userService)));
+
+app.listen(3000, () => {
+  console.log("Listening on port 3000!");
 });
-
-// app.use("/users2", new GenericRouter(new GenericController(userService)));
-
-
-app.listen(3000, () => console.log("Server started on port 3000"));

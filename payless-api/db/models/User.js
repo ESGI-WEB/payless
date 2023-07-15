@@ -2,14 +2,20 @@ const {Model, DataTypes} = require("sequelize");
 
 module.exports = function (connection) {
     class User extends Model {
+        static currencies = ["EUR", "USD", "CHF", "GBP"];
+
         async checkPassword(password) {
             const bcrypt = require("bcryptjs");
             return bcrypt.compare(password, this.password);
         }
 
-        generateToken() {
+        async generateToken() {
             const jwt = require("jsonwebtoken");
-            return jwt.sign({id: this.id}, process.env.JWT_SECRET, {
+            return jwt.sign({
+                id: this.id,
+                email: this.email,
+                role: this.role,
+            }, process.env.JWT_SECRET, {
                 expiresIn: "1d",
             });
         }
@@ -17,8 +23,63 @@ module.exports = function (connection) {
 
     User.init(
         {
-            lastname: DataTypes.STRING,
-            firstname: DataTypes.STRING,
+            role: {
+                type: DataTypes.ENUM("merchant", "admin"),
+                defaultValue: "merchant",
+                allowNull: false,
+            },
+            company_name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            zip_code: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            city: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            address: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            country: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            merchant_url: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isUrl: true,
+                }
+            },
+            confirmation_url: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isUrl: true,
+                }
+            },
+            cancel_url: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isUrl: true,
+                }
+            },
+            currency: {
+                type: DataTypes.ENUM(...User.currencies),
+                allowNull: false,
+                validate: {
+                    isIn: function (value) {
+                        if (!User.currencies.includes(value)) {
+                            throw new Error(`User.currency must be one of ${User.currencies.join(", ")}`);
+                        }
+                    },
+                }
+            },
             email: {
                 type: DataTypes.STRING,
                 unique: true,
@@ -36,13 +97,17 @@ module.exports = function (connection) {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    min: 8,
                     isNotNull: function (value) {
                         if (value === null) {
                             throw new Error("Password cannot be null");
                         }
                     },
-
+                    // check if password contains at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number
+                    is: function (value) {
+                        if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+                            throw new Error("Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number");
+                        }
+                    },
                 },
             },
         },

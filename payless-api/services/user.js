@@ -13,9 +13,15 @@ module.exports = {
   findById: async function (id) {
     return User.findByPk(id);
   },
+  findOneBy: async function (criteria) {
+    return User.findOne({
+      where: criteria,
+    });
+  },
   create: async function (data) {
     try {
-      return await User.create(data);
+      const safeData = removeUnauthorizedFields(data);
+      return await User.create(safeData);
     } catch (e) {
       if (e instanceof Sequelize.ValidationError) {
         throw ValidationError.createFromSequelizeValidationError(e);
@@ -25,12 +31,12 @@ module.exports = {
   },
   update: async function (criteria, data) {
     try {
-      const [nb, users = []] = await User.update(data, {
+      const safeData = removeUnauthorizedFields(data);
+      const [nb, users = []] = await User.update(safeData, {
         where: criteria,
         returning: true,
         individualHooks: true,
       });
-      console.log(nb, users);
       return users;
     } catch (e) {
       if (e instanceof Sequelize.ValidationError) {
@@ -44,4 +50,18 @@ module.exports = {
       where: criteria,
     });
   },
+
+  format: function (users) {
+    if(users instanceof User) {
+      return users.format();
+    }
+
+    return users.map(user => user.format());
+  }
 };
+
+
+removeUnauthorizedFields = function (user) {
+    const { token = null, uuid = null, ...safeUser } = user;
+    return safeUser;
+}

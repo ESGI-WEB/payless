@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const connection = new Sequelize(process.env.DATABASE_URL);
+const connection = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+});
 const db = {
   connection,
 };

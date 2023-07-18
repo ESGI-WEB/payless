@@ -126,6 +126,9 @@ module.exports = function (connection) {
                     },
                 },
             },
+            kbis: {
+                type: DataTypes.STRING,
+            }
         },
         {
             sequelize: connection,

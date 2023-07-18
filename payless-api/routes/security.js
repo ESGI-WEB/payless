@@ -2,6 +2,7 @@ const fs = require('fs');
 const {Router} = require("express");
 const multer = require('multer');
 const ValidationError = require("../errors/ValidationError");
+const mailerService = require("../services/mailer");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -45,6 +46,8 @@ module.exports = function (userService) {
 
             data.role = 'merchant-to-validate';
             const user = await userService.create(data);
+
+            await mailerService.sendRegistrationMail(user.email);
 
             res.json({
                 ...user.format(),

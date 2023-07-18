@@ -21,9 +21,7 @@ services:
 
   server:
     image: node
-    environment:
-      DATABASE_URL: postgres://root:password@db:5432/app
-      JWT_SECRET: HhJK7!hjjh!jg2addMJ78bj
+    env_file: .env
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app

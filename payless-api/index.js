@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const GenericRouter = require("./routes/genericCRUD");
+const SecurityRouter = require("./routes/security");
 const GenericController = require("./controllers/genericCRUD");
 const userService = require("./services/user");
 const errorHandler = require("./middlewares/errorHandler");
@@ -19,7 +20,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(require("./routes/security")(userService));
+app.use(new SecurityRouter(userService));
 app.use("/users", auth('admin'), new GenericRouter(new GenericController(userService)));
 
 app.use(errorHandler);

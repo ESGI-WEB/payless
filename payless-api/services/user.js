@@ -20,7 +20,6 @@ module.exports = {
   },
   create: async function (data) {
     try {
-      data.role = 'merchant';
       const safeData = removeUnauthorizedFields(data);
       return await User.create(safeData);
     } catch (e) {
@@ -51,10 +50,18 @@ module.exports = {
       where: criteria,
     });
   },
+
+  format: function (users) {
+    if(users instanceof User) {
+      return users.format();
+    }
+
+    return users.map(user => user.format());
+  }
 };
 
 
 removeUnauthorizedFields = function (user) {
-    const { token = null, ...safeUser } = user;
+    const { token = null, uuid = null, ...safeUser } = user;
     return safeUser;
 }

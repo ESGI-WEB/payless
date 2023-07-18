@@ -19,13 +19,29 @@ module.exports = function (connection) {
                 expiresIn: "1d",
             });
         }
+
+        format() {
+            const {
+                // values to be removed
+                password = null,
+                // other values are kept
+                ...safeUser
+            } = this.dataValues;
+            return safeUser;
+        }
     }
 
     User.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                allowNull: false,
+                unique: true,
+            },
             role: {
-                type: DataTypes.ENUM("merchant", "admin"),
-                defaultValue: "merchant",
+                type: DataTypes.ENUM("merchant", "merchant-to-validate", "refused", "admin"),
+                defaultValue: "merchant-to-validate",
                 allowNull: false,
             },
             company_name: {
@@ -105,7 +121,7 @@ module.exports = function (connection) {
                     // check if password contains at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number
                     is: function (value) {
                         if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
-                            throw new Error("Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number");
+                            throw new Error("Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character among @$!%*?&");
                         }
                     },
                 },

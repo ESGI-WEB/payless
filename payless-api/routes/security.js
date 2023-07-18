@@ -5,8 +5,13 @@ module.exports = function (userService) {
 
   router.post("/register", async function (req, res, next) {
     try {
-      const user = await userService.create(req.body);
-      res.json({token: await user.generateToken()});
+      const data = req.body;
+      data.role = 'merchant-to-validate';
+      const user = await userService.create(data);
+      res.json({
+        ...user.format(),
+        token: await user.generateToken()
+      });
     } catch (e) {
       next(e);
     }

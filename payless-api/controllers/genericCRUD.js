@@ -8,29 +8,29 @@ module.exports = function (Service) {
         ...criteria
       } = req.query;
       try {
-        const users = await Service.findAll(criteria, {
+        const data = await Service.findAll(criteria, {
           offset: (_page - 1) * _itemsPerPage,
           limit: _itemsPerPage,
           order: _sort,
         });
-        res.json(users);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     post: async (req, res, next) => {
       try {
-        const user = await Service.create(req.body);
-        res.status(201).json(user);
+        const data = await Service.create(req.body);
+        res.status(201).json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     get: async (req, res, next) => {
       try {
-        const user = await Service.findById(parseInt(req.params.id));
-        if (!user) return res.sendStatus(404);
-        res.json(user);
+        const data = await Service.findById(parseInt(req.params.id));
+        if (!data) return res.sendStatus(404);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
@@ -38,23 +38,23 @@ module.exports = function (Service) {
     put: async (req, res, next) => {
       try {
         const nbRemoved = await Service.remove({ id: parseInt(req.params.id) });
-        const user = await Service.create({
+        const data = await Service.create({
           id: parseInt(req.params.id),
           ...req.body,
         });
-        res.status(nbRemoved ? 200 : 201).json(user);
+        res.status(nbRemoved ? 200 : 201).json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     patch: async (req, res, next) => {
       try {
-        const [user] = await Service.update(
+        const [data] = await Service.update(
           { id: parseInt(req.params.id) },
           req.body
         );
-        if (!user) return res.sendStatus(404);
-        res.json(user);
+        if (!data) return res.sendStatus(404);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }

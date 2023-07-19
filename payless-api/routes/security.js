@@ -47,8 +47,6 @@ module.exports = function (userService) {
             data.role = 'merchant-to-validate';
             const user = await userService.create(data);
 
-            await mailerService.sendRegistrationMail(user.email);
-
             res.json({
                 ...user.format(),
                 token: await user.generateToken()

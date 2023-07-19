@@ -1,8 +1,11 @@
 const {Model, DataTypes} = require("sequelize");
+const mailerService = require("../../services/mailer");
 
 module.exports = function (connection) {
     class User extends Model {
         static currencies = ["EUR", "USD", "CHF", "GBP"];
+        static roles = ["merchant", "merchant-to-validate", "refused", "admin"];
+
 
         async checkPassword(password) {
             const bcrypt = require("bcryptjs");
@@ -18,6 +21,18 @@ module.exports = function (connection) {
             }, process.env.JWT_SECRET, {
                 expiresIn: "1d",
             });
+        }
+
+        isToValidate() {
+            return this.role === "merchant-to-validate";
+        }
+
+        isValid() {
+            return ['merchant', 'admin'].includes(this.role);
+        }
+
+        isRefused() {
+            return this.role === "refused";
         }
 
         format() {
@@ -40,9 +55,16 @@ module.exports = function (connection) {
                 unique: true,
             },
             role: {
-                type: DataTypes.ENUM("merchant", "merchant-to-validate", "refused", "admin"),
+                type: DataTypes.ENUM(User.roles),
                 defaultValue: "merchant-to-validate",
                 allowNull: false,
+                validate: {
+                    isIn: function (value) {
+                        if (!User.roles.includes(value)) {
+                            throw new Error(`User.role must be one of ${User.roles.join(", ")}`);
+                        }
+                    },
+                }
             },
             company_name: {
                 type: DataTypes.STRING,
@@ -147,6 +169,15 @@ module.exports = function (connection) {
 
     User.addHook("beforeCreate", encryptPassword);
     User.addHook("beforeUpdate", encryptPassword);
+
+
+    async function sendUserMail(user, options) {
+        if (user.isToValidate()) {
+            await mailerService.sendRegistrationMail(user.email);
+        }
+    }
+
+    User.addHook("afterCreate", sendUserMail);
 
     return User;
 };

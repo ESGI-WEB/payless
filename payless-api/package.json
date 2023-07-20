@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "mocha --recursive"
+    "test": "sh ./test/test-dev.sh"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "twing": "^6.0.0-alpha.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "mocha": "^10.2.0",
     "nodemon": "^2.0.22"
   }

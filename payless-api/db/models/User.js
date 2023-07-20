@@ -1,9 +1,9 @@
 const {Model, DataTypes} = require("sequelize");
 const mailerService = require("../../services/mailer");
+const constants = require("../../helpers/constants");
 
 module.exports = function (connection) {
     class User extends Model {
-        static currencies = ["EUR", "USD", "CHF", "GBP"];
         static roles = ["merchant", "merchant-to-validate", "refused", "admin"];
 
 
@@ -68,52 +68,52 @@ module.exports = function (connection) {
             },
             company_name: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
             zip_code: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
             city: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
             country: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
             merchant_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
                 validate: {
                     isUrl: true,
                 }
             },
             confirmation_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
                 validate: {
                     isUrl: true,
                 }
             },
             cancel_url: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
                 validate: {
                     isUrl: true,
                 }
             },
             currency: {
-                type: DataTypes.ENUM(...User.currencies),
-                allowNull: false,
+                type: DataTypes.ENUM(...constants.CURRENCIES),
+                // allowNull: false,
                 validate: {
                     isIn: function (value) {
-                        if (!User.currencies.includes(value)) {
-                            throw new Error(`User.currency must be one of ${User.currencies.join(", ")}`);
+                        if (!constants.CURRENCIES.includes(value)) {
+                            throw new Error(`User.currency must be one of ${constants.CURRENCIES.join(", ")}`);
                         }
                     },
                 }

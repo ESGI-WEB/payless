@@ -32,12 +32,12 @@ const sendEmail = async (to, subject, htmlContent) => {
         name: 'Payless',
     };
 
-    if (!process.env.PRODUCTION) {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
         to = process.env.TEST_EMAIL;
     }
 
     if (!to) {
-        throw new ServiceError('No email provided');
+        throw new ServiceError('No test email provided');
     }
 
     return await tranEmailApi

@@ -1,3 +1,5 @@
+const sequelize = require('../db');
+
 module.exports = function (Service) {
   return {
     cget: async (req, res, next) => {
@@ -8,53 +10,59 @@ module.exports = function (Service) {
         ...criteria
       } = req.query;
       try {
-        const users = await Service.findAll(criteria, {
+        const data = await Service.findAll(criteria, {
           offset: (_page - 1) * _itemsPerPage,
           limit: _itemsPerPage,
           order: _sort,
         });
-        res.json(users);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     post: async (req, res, next) => {
       try {
-        const user = await Service.create(req.body);
-        res.status(201).json(user);
+        const data = await Service.create(req.body);
+        res.status(201).json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     get: async (req, res, next) => {
       try {
-        const user = await Service.findById(parseInt(req.params.id));
-        if (!user) return res.sendStatus(404);
-        res.json(user);
+        const data = await Service.findById(parseInt(req.params.id));
+        if (!data) return res.sendStatus(404);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }
     },
     put: async (req, res, next) => {
+      const transaction = await sequelize.connection.transaction();
       try {
-        const nbRemoved = await Service.remove({ id: parseInt(req.params.id) });
-        const user = await Service.create({
-          id: parseInt(req.params.id),
-          ...req.body,
-        });
-        res.status(nbRemoved ? 200 : 201).json(user);
+        const targetId = parseInt(req.params.id);
+        const nbRemoved = targetId ? await Service.remove({ id: targetId }) : 0;
+        const newData = req.body;
+        if (nbRemoved) {
+          newData.id = targetId;
+        }
+
+        const data = await Service.create(newData);
+        transaction.commit();
+        res.status(nbRemoved ? 200 : 201).json('format' in Service ? Service.format(data) : data);
       } catch (err) {
+        transaction.rollback();
         next(err);
       }
     },
     patch: async (req, res, next) => {
       try {
-        const [user] = await Service.update(
+        const [data] = await Service.update(
           { id: parseInt(req.params.id) },
           req.body
         );
-        if (!user) return res.sendStatus(404);
-        res.json(user);
+        if (!data) return res.sendStatus(404);
+        res.json('format' in Service ? Service.format(data) : data);
       } catch (err) {
         next(err);
       }

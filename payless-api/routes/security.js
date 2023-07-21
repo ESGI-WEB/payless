@@ -2,6 +2,7 @@ const fs = require('fs');
 const {Router} = require("express");
 const multer = require('multer');
 const ValidationError = require("../errors/ValidationError");
+const mailerService = require("../services/mailer");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -48,7 +49,7 @@ module.exports = function (userService) {
 
             res.json({
                 ...user.format(),
-                token: await user.generateToken()
+                token: user.generateToken()
             });
         } catch (e) {
             // remove file uploaded
@@ -72,7 +73,7 @@ module.exports = function (userService) {
                 return res.sendStatus(401);
             }
 
-            res.json({token: await user.generateToken()});
+            res.json({token: user.generateToken()});
         } catch (e) {
             next(e)
         }

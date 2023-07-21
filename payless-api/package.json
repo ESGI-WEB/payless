@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "sh ./test/test-dev.sh"
   },
   "author": "",
   "license": "ISC",
@@ -16,9 +16,15 @@
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.0",
-    "sequelize": "^6.31.1"
+    "sequelize": "^6.31.1",
+    "sib-api-v3-sdk": "^8.5.0",
+    "twing": "^6.0.0-alpha.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "@faker-js/faker": "^8.0.2",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22",
+    "sinon": "^15.2.0",
+    "supertest": "^6.3.3"
   }
 }

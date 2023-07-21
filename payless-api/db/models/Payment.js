@@ -3,13 +3,27 @@ const constants = require("../../helpers/constants");
 module.exports = function (connection) {
     class Payment extends Model {
 
+        generateLink() {
+            return `${process.env.APP_URL}/payments/${this.uuid}/checkout`;
+        }
+
         format() {
-            return this.dataValues;
+            const safeValues = {
+                ...this.dataValues,
+            };
+            safeValues.checkout_link = this.generateLink();
+            return safeValues;
         }
     }
 
     Payment.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                unique: true,
+                allowNull: false,
+            },
             total: {
                 type: DataTypes.DECIMAL(10, 2),
                 allowNull: false,
@@ -28,8 +42,9 @@ module.exports = function (connection) {
                 type: DataTypes.STRING,
             },
             status: {
-                type: DataTypes.ENUM(["succeeded", "pending", "failed"]),
+                type: DataTypes.ENUM(["succeeded", "pending", "canceled"]),
                 allowNull: false,
+                defaultValue: "pending",
             },
         },
         {

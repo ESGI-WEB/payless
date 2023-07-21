@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form label, form input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        form input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form button {
+            display: block;
+            width: 50%;
+            margin: 10px auto;
+            padding: 10px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        form button#checkout-btn {
+            background-color: #4CAF50;
+        }
+
+        form button#checkout-btn:hover {
+            background-color: #45a049;
+        }
+
+        form button#cancel-btn {
+            background-color: #af4c4c;
+        }
+
+        form button#cancel-btn:hover {
+            background-color: #a04545;
+        }
+    </style>
+</head>
+<body>
+<form action=".">
+    <label for="cardholder_name">Card holder's name</label>
+    <input type="text" id="cardholder_name" name="cardholder_name" placeholder="John Doe" required>
+
+    <label for="card_number">Card number</label>
+    <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" required>
+
+    <label for="expiration_date">Date d'Expiration</label>
+    <input type="text" id="expiration_date" name="expiration_date" placeholder="MM/AA" required>
+
+    <label for="cvv">CVV</label>
+    <input type="text" id="cvv" name="cvv" placeholder="123" required>
+
+    <button type="submit" id="checkout-btn">Checkout</button>
+    <button type="button" id="cancel-btn">Cancel</button>
+</form>
+</body>
+</html>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function (){
+    const disableButtons = () => {
+        document.querySelector('#checkout-btn').setAttribute('disabled', 'disabled');
+        document.querySelector('#cancel-btn').setAttribute('disabled', 'disabled');
+    };
+    const enableButtons = () => {
+        document.querySelector('#checkout-btn').removeAttribute('disabled');
+        document.querySelector('#cancel-btn').removeAttribute('disabled');
+    };
+
+    document.querySelector('#cancel-btn').addEventListener('click', () => {
+        disableButtons();
+
+        fetch("{{ cancel_url }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                console.log(response)
+                response.json()
+            })
+            .then(() => {
+                window.location.href = "{{ canceled_url }}";
+            })
+            .catch(error => {
+                console.error(error);
+                enableButtons();
+            });
+    });
+});
+</script>

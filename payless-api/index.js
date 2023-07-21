@@ -15,6 +15,11 @@ app.use(new SecurityRouter(userService));
 app.use("/users", auth('admin'), require("./routes/users")());
 
 app.use(errorHandler);
-app.listen(3000, () => {
-  console.log("Listening on port 3000!");
-});
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(3000, () => {
+    console.log("Listening on port 3000!");
+  });
+}
+
+module.exports = app;

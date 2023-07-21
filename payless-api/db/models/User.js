@@ -12,7 +12,7 @@ module.exports = function (connection) {
             return bcrypt.compare(password, this.password);
         }
 
-        async generateToken() {
+        generateToken() {
             const jwt = require("jsonwebtoken");
             return jwt.sign({
                 id: this.id,
@@ -42,18 +42,14 @@ module.exports = function (connection) {
                 // other values are kept
                 ...safeUser
             } = this.dataValues;
+            safeUser.createdAt = safeUser.updatedAt.toString();
+            safeUser.updatedAt = safeUser.updatedAt.toString();
             return safeUser;
         }
     }
 
     User.init(
         {
-            uuid: {
-                type: DataTypes.UUID,
-                defaultValue: DataTypes.UUIDV4,
-                allowNull: false,
-                unique: true,
-            },
             role: {
                 type: DataTypes.ENUM(User.roles),
                 defaultValue: "merchant-to-validate",
@@ -169,15 +165,6 @@ module.exports = function (connection) {
 
     User.addHook("beforeCreate", encryptPassword);
     User.addHook("beforeUpdate", encryptPassword);
-
-
-    async function sendUserMail(user, options) {
-        if (user.isToValidate()) {
-            await mailerService.sendRegistrationMail(user.email);
-        }
-    }
-
-    User.addHook("afterCreate", sendUserMail);
 
     return User;
 };

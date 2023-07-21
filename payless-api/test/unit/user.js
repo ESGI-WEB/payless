@@ -4,8 +4,20 @@ const {User} = require('../../db');
 const constants = require('../../helpers/constants');
 const {faker} = require('@faker-js/faker');
 const {Op} = require("sequelize");
+const sinon = require('sinon');
+const mailerService = require('../../services/mailer');
+const {sendEmail} = require("../../services/mailer");
 
 describe('Unit - User service', function () {
+    beforeEach(function () {
+        // mock sendRegistrationMail
+        sinon.stub(mailerService, 'sendRegistrationMail')
+    });
+
+    afterEach(function () {
+        sinon.restore();
+    });
+
     describe('#findAll()', function () {
         it('should return all users', async function () {
             const total = await User.count();
@@ -69,6 +81,7 @@ describe('Unit - User service', function () {
             const user = await userService.create(data);
             assert.strictEqual(user instanceof User, true);
             assert.strictEqual(user.role, 'merchant-to-validate');
+
             for (const key in data) {
                 if (key === 'password') {
                     assert.notEqual(user.password, data.password);

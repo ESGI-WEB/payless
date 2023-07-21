@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 const { User } = require("../db");
 const ValidationError = require("../errors/ValidationError");
 const constants = require("../helpers/constants");
+const mailerService = require("./mailer");
 
 module.exports = {
   findAll: async function (criteria = {}, options = {}) {
@@ -25,7 +26,11 @@ module.exports = {
       if(!safeData.role || safeData.role !== 'admin') {
         checkMerchantDataValidity(safeData);
       }
-      return await User.create(safeData);
+      const user = await User.create(safeData);
+      if (user.isToValidate()) {
+        await mailerService.sendRegistrationMail(user.email);
+      }
+      return user;
     } catch (e) {
       if (e instanceof Sequelize.ValidationError) {
         throw ValidationError.createFromSequelizeValidationError(e);
@@ -75,7 +80,7 @@ module.exports = {
 
 
 removeUnauthorizedFields = function (user) {
-    const { token = null, uuid = null, ...safeUser } = user;
+    const { token = null, ...safeUser } = user;
     return safeUser;
 }
 

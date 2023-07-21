@@ -15,4 +15,5 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Running test"
-mocha --recursive --exit
+# set NODE_ENV=test
+NODE_ENV=test mocha --recursive --exit

@@ -1,3 +1,5 @@
+const sequelize = require('../db');
+
 module.exports = function (Service) {
   return {
     cget: async (req, res, next) => {
@@ -36,14 +38,20 @@ module.exports = function (Service) {
       }
     },
     put: async (req, res, next) => {
+      const transaction = await sequelize.connection.transaction();
       try {
-        const nbRemoved = await Service.remove({ id: parseInt(req.params.id) });
-        const data = await Service.create({
-          id: parseInt(req.params.id),
-          ...req.body,
-        });
+        const targetId = parseInt(req.params.id);
+        const nbRemoved = targetId ? await Service.remove({ id: targetId }) : 0;
+        const newData = req.body;
+        if (nbRemoved) {
+          newData.id = targetId;
+        }
+
+        const data = await Service.create(newData);
+        transaction.commit();
         res.status(nbRemoved ? 200 : 201).json('format' in Service ? Service.format(data) : data);
       } catch (err) {
+        transaction.rollback();
         next(err);
       }
     },

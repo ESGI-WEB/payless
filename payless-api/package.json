@@ -23,6 +23,8 @@
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
     "mocha": "^10.2.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "sinon": "^15.2.0",
+    "supertest": "^6.3.3"
   }
 }

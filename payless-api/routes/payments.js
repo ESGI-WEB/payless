@@ -7,6 +7,7 @@ module.exports = () => {
     router.post("/", PaymentController.post);
     router.get("/:uuid/checkout", PaymentController.checkout);
     router.post("/:uuid/cancel", PaymentController.cancel);
+    router.post("/:uuid/validate", PaymentController.validate);
 
     return router;
 };

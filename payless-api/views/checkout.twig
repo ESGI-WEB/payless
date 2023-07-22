@@ -97,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function (){
         document.querySelector('#cancel-btn').removeAttribute('disabled');
     };
 
+    // TODO validators
+
     document.querySelector('#cancel-btn').addEventListener('click', () => {
         disableButtons();
 
@@ -107,11 +109,40 @@ document.addEventListener('DOMContentLoaded', function (){
             },
         })
             .then(response => {
-                console.log(response)
                 response.json()
             })
             .then(() => {
                 window.location.href = "{{ canceled_url }}";
+            })
+            .catch(error => {
+                console.error(error);
+                enableButtons();
+            });
+    });
+
+    document.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        disableButtons();
+
+        const cardholderName = document.querySelector('#cardholder_name').value;
+        const cardNumber = document.querySelector('#card_number').value;
+        const expirationDate = document.querySelector('#expiration_date').value;
+        const cvv = document.querySelector('#cvv').value;
+
+        fetch("{{ validate_url }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                cardholder_name: cardholderName,
+                card_number: cardNumber,
+                expiration_date: expirationDate,
+                cvv: cvv
+            })
+        })
+            .then(() => {
+                window.location.href = "{{ confirmation_url }}";
             })
             .catch(error => {
                 console.error(error);

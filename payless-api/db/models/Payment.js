@@ -42,7 +42,7 @@ module.exports = function (connection) {
                 type: DataTypes.STRING,
             },
             status: {
-                type: DataTypes.ENUM(["succeeded", "pending", "canceled"]),
+                type: DataTypes.ENUM(["succeeded", "processing", "pending", "canceled"]),
                 allowNull: false,
                 defaultValue: "pending",
             },

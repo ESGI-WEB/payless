@@ -42,9 +42,37 @@ module.exports = function () {
                 twing.render('checkout.twig', {
                     cancel_url: `${process.env.APP_URL}/payments/${payment.uuid}/cancel`,
                     canceled_url: user.cancel_url,
+                    validate_url: `${process.env.APP_URL}/payments/${payment.uuid}/validate`,
+                    confirmation_url: user.confirmation_url,
                 }).then((output) => {
                     res.end(output);
                 });
+            } catch (e) {
+                next(e);
+            }
+        },
+        validate: async function (req, res, next) {
+            try {
+                const payment = await paymentService.findOneBy({
+                    uuid: req.params.uuid,
+                }, {
+                    include: Operation
+                });
+
+                if (!payment) {
+                    res.sendStatus(404);
+                }
+
+                // TODO Check credentials
+                // TODO Cors
+
+                if (payment.status !== 'pending') {
+                    res.sendStatus(403);
+                }
+
+                await paymentService.validate({uuid: payment.uuid}, req.body);
+
+                res.sendStatus(200);
             } catch (e) {
                 next(e);
             }

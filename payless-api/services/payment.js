@@ -47,32 +47,38 @@ module.exports = {
                 cvv = null,
             } = data;
 
-            const missingFields = {};
+            const errorsFields = {};
             if (!card_number || !card_number.trim()) {
-                missingFields['card_number'] = 'card_number is required';
-            } else if (!card_number.replace(' ', '').match(/^[0-9]{16}$/)) {
-                missingFields['card_number'] = 'card_number is invalid';
+                errorsFields['card_number'] = 'card_number is required';
+            } else if (!card_number.replaceAll(' ', '').match(/^[0-9]{16}$/)) {
+                errorsFields['card_number'] = 'card_number is invalid';
             }
 
             if (!cardholder_name || !cardholder_name.trim()) {
-                missingFields['cardholder_name'] = 'cardholder_name is required';
+                errorsFields['cardholder_name'] = 'cardholder_name is required';
             }
 
             if (!expiration_date || !expiration_date.trim()) {
-                missingFields['expiration_date'] = 'expiration_date is required';
-            } else if (!expiration_date.match(/^[0-9]{2}\/[0-9]{2}$/)) {
-                missingFields['expiration_date'] = 'expiration_date is invalid';
+                errorsFields['expiration_date'] = 'expiration_date is required';
+            } else if (!expiration_date.match(/^[0-9]{2}\/[0-9]{4}$/)) {
+                errorsFields['expiration_date'] = 'expiration_date is invalid';
+            } else {
+                const [month, year] = input.value.split('/');
+                const now = new Date();
+                const currentDateFormatted = (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getFullYear();
+                if (new Date(year, parseInt(month) - 1) < now && input.value !== currentDateFormatted) {
+                    errorsFields['expiration_date'] = 'expiration_date is passed';
+                }
             }
-            // todo check expiration date not passed
 
             if (!cvv || !cvv.trim()) {
-                missingFields['cvv'] = 'cvv is required';
+                errorsFields['cvv'] = 'cvv is required';
             } else if (!cvv.match(/^[0-9]{3}$/)) {
-                missingFields['cvv'] = 'cvv is invalid';
+                errorsFields['cvv'] = 'cvv is invalid';
             }
 
-            if (Object.keys(missingFields).length > 0) {
-                throw new ValidationError(missingFields);
+            if (Object.keys(errorsFields).length > 0) {
+                throw new ValidationError(errorsFields);
             }
 
             // TODO call PSP

@@ -6,7 +6,11 @@ const mailerService = require("../services/mailer");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'storage/upload/kbis/');
+        const path = 'storage/upload/kbis/';
+        if(!fs.existsSync(path)){
+            fs.mkdirSync(path,{recursive:true});
+        }
+        cb(null, path);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)

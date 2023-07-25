@@ -31,7 +31,7 @@ docker exec payless-api-1 node migrate.js
 ### Tests
 Pour lancer les tests, il suffit de lancer la commande suivante :
 ```bash
-docker exec payless-api-server-1 npm test
+docker exec payless-api-1 npm test
 ```
 
 ## backoffice

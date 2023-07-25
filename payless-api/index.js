@@ -8,6 +8,7 @@ const auth = require("./middlewares/auth");
 const requestMiddleware = require("./middlewares/request");
 const paymentRouter = require("./routes/payments")();
 const userRouter = require("./routes/users")();
+const operationRouter = require("./routes/operations")();
 
 app.use(express.json());
 app.use(cors());
@@ -15,7 +16,9 @@ app.use(requestMiddleware);
 
 app.use(new SecurityRouter(userService));
 app.use("/users", auth('admin'), userRouter);
+// TODO to SECURE
 app.use("/payments", paymentRouter);
+app.use("/operations", operationRouter);
 
 app.use(errorHandler);
 

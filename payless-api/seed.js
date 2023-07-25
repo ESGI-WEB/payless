@@ -3,6 +3,7 @@ const {faker} = require('@faker-js/faker');
 const {DataTypes} = require("sequelize");
 const {User} = require('./db');
 const constants = require("./helpers/constants");
+const bcrypt = require("bcryptjs");
 
 const seed = async () => {
     try {
@@ -16,6 +17,8 @@ const seed = async () => {
         const users = [];
         const currencies = constants.CURRENCIES;
         const userRoles = ['merchant', 'merchant-to-validate', 'refused'];
+        const salt = await bcrypt.genSalt(10);
+
         while (i < 20) {
             users.push({
                 company_name: faker.company.name(),
@@ -28,7 +31,7 @@ const seed = async () => {
                 cancel_url: faker.internet.url(),
                 currency: currencies[Math.floor(Math.random() * currencies.length)],
                 email: i+faker.internet.email(),
-                password: 'Azerty1*',
+                password: await bcrypt.hash('Azerty1*', salt),
                 kbis: 'test.pdf',
                 role: userRoles[Math.floor(Math.random() * userRoles.length)],
             });

@@ -54,7 +54,7 @@ describe('Integration - /users', function () {
                 .get(`/users`)
                 .query({role: 'merchant-to-validate'})
                 .set('Authorization', 'Bearer ' + admin.token);
-            const expectedUsers = (await User.findAll({where: {role: 'merchant-to-validate'}})).map(user => user.format());
+            const expectedUsers = (await User.findAll({limit: 10, where: {role: 'merchant-to-validate'}})).map(user => user.format());
 
             assert.strictEqual(response.status, 200);
             assert.deepStrictEqual(response.body, expectedUsers)

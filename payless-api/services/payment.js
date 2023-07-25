@@ -47,7 +47,6 @@ module.exports = {
             } = data;
 
             const errorsFields = {};
-            errorsFields['card_number'] = ['card_number is required'];
             if (!card_number || !card_number.trim()) {
                 errorsFields['card_number'] = ['card_number is required'];
             } else if (!card_number.replaceAll(' ', '').match(/^[0-9]{16}$/)) {

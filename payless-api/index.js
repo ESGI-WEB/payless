@@ -16,7 +16,6 @@ app.use(requestMiddleware);
 
 app.use(new SecurityRouter(userService));
 app.use("/users", auth('admin'), userRouter);
-// TODO to SECURE
 app.use("/payments", paymentRouter);
 app.use("/operations", operationRouter);
 

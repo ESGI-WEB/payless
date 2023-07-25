@@ -1,6 +1,7 @@
 const {Model, DataTypes} = require("sequelize");
 const mailerService = require("../../services/mailer");
 const constants = require("../../helpers/constants");
+const jwt = require("jsonwebtoken");
 
 module.exports = function (connection) {
     class User extends Model {
@@ -50,6 +51,14 @@ module.exports = function (connection) {
 
     User.init(
         {
+            secret_token: {
+                type: DataTypes.STRING,
+                unique: true,
+            },
+            client_token: {
+                type: DataTypes.STRING,
+                unique: true,
+            },
             role: {
                 type: DataTypes.ENUM(User.roles),
                 defaultValue: "merchant-to-validate",
@@ -163,7 +172,18 @@ module.exports = function (connection) {
         user.password = await bcrypt.hash(user.password, salt);
     }
 
+    async function generateTokens(user) {
+        const randomstring = require("randomstring");
+        const jwt = require("jsonwebtoken");
+
+        const secret_token = randomstring.generate(50);
+        const client_token = jwt.sign({}, secret_token);
+
+        await user.update({secret_token, client_token});
+    }
+
     User.addHook("beforeCreate", encryptPassword);
+    User.addHook("afterCreate", generateTokens);
     User.addHook("beforeUpdate", encryptPassword);
 
     return User;

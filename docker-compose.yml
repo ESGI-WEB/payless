@@ -32,6 +32,7 @@ services:
         npm run build
     networks:
       - fake-psp
+      - payless-network
 
   mongo:
     image: mongo
@@ -52,6 +53,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: app
+      POSTGRES_PORT: 5432
     volumes:
       - pg-data:/var/lib/postgresql/data
 
@@ -72,6 +74,8 @@ services:
 networks:
   fake-psp:
     driver: bridge
+  payless-network:
+    external: true
 
 volumes:
   db-data: {}

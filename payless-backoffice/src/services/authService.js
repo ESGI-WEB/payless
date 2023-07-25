@@ -1,10 +1,11 @@
 import {reactive, provide} from 'vue';
 import VueJwtDecode from 'vue-jwt-decode';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const authService = reactive({
 
     async login(email,password) {
+        console.log(API_BASE_URL);
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: {
@@ -47,6 +48,27 @@ const authService = reactive({
         }
 
         return await response.json();
+    },
+
+    isLoggedIn() {
+        return !!localStorage.getItem('authToken');
+    },
+    isAdmin() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            return false;
+        }
+        const decodedToken = VueJwtDecode.decode(token);
+        return decodedToken.role === 'admin';
+    },
+
+     isMerchant() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            return false;
+        }
+        const decodedToken = VueJwtDecode.decode(token);
+        return decodedToken.role === 'merchant';
     },
 });
 export default authService;

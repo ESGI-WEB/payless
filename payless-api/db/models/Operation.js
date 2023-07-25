@@ -10,6 +10,11 @@ module.exports = function (connection) {
 
     Operation.init(
         {
+            uuid: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                allowNull: false,
+            },
             amount: {
                 type: DataTypes.DECIMAL(10, 2),
                 allowNull: false,
@@ -25,8 +30,9 @@ module.exports = function (connection) {
                 allowNull: false,
             },
             status: {
-                type: DataTypes.ENUM(["succeeded", "pending", "canceled"]),
+                type: DataTypes.ENUM(["succeeded", "pending", "canceled", "created"]),
                 allowNull: false,
+                defaultValue: "created",
             },
         },
         {

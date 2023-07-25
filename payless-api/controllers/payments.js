@@ -11,8 +11,7 @@ module.exports = function () {
                 const data = req.body;
 
                 // TODO set UserID
-                // TODO Return url to payment page
-                data.UserId = (await User.findOne({where: {role: 'merchant'}})).id; // TO REMOVE
+                data.UserId = (await User.findOne({where: {role: 'merchant'}})).id; // TODO TO REMOVE
 
                 const payment = await paymentService.create(data);
 
@@ -70,7 +69,7 @@ module.exports = function () {
                     res.sendStatus(403);
                 }
 
-                await paymentService.validate({uuid: payment.uuid}, req.body);
+                await paymentService.validate(payment.uuid, req.body);
 
                 res.sendStatus(200);
             } catch (e) {

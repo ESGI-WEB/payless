@@ -113,14 +113,23 @@ document.addEventListener('DOMContentLoaded', function (){
     };
     const handleError = (data = null) => {
         if (data) {
+            const globalErrors = document.querySelector('#global_errors');
             if (typeof data === 'string') {
-                document.querySelector('#global_errors').innerHTML = `<li>${data}</li>`;
+                globalErrors.innerHTML = `<li>${data}</li>`;
             } else {
-                for (const [field, error] of Object.entries(data)) {
-                    const fieldErrors = document.querySelector(`#${field}_errors`);
-                    if (fieldErrors) {
-                        fieldErrors.innerHTML = `<li>${error}</li>`;
+                let errorsWithoutFields = [];
+                for (const [field, errors] of Object.entries(data)) {
+                    if (errors.length > 0) {
+                        const fieldErrors = document.querySelector(`#${field}_errors`);
+                        if (fieldErrors) {
+                            fieldErrors.innerHTML = errors.map(error => `<li>${error}</li>`).join('\n');
+                        } else {
+                            errorsWithoutFields = [...errorsWithoutFields, errors];
+                        }
                     }
+                }
+                if (errorsWithoutFields.length > 0) {
+                    globalErrors.innerHTML = errorsWithoutFields.map(error => `<li>${error}</li>`).join('\n');
                 }
             }
         }
@@ -154,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function (){
                     }
                     break;
                 case 'card_number':
-                    console.log(input.value)
                     if (!input.value || !input.value.replaceAll(' ', '').match(/^[0-9]{16}$/)) {
                         errorEl.innerHTML = '<li>Card number is invalid</li>';
                     }
@@ -191,12 +199,13 @@ document.addEventListener('DOMContentLoaded', function (){
                 'Content-Type': 'application/json'
             },
         })
-            .then(response => response.json())
             .then(response => {
                 if (response.status === 200) {
                     window.location.href = "{{ canceled_url }}";
                 } else {
-                    handleError(response);
+                    return response.json().then(data => {
+                        handleError(data);
+                    });
                 }
             })
             .catch(error => {
@@ -228,12 +237,13 @@ document.addEventListener('DOMContentLoaded', function (){
                 cvv: cvv
             })
         })
-            .then(response => response.json())
             .then(response => {
                 if (response.status === 200) {
                     window.location.href = "{{ confirmation_url }}";
                 } else {
-                    handleError(response);
+                    return response.json().then(data => {
+                        handleError(data);
+                    });
                 }
             })
             .catch(error => {

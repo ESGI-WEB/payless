@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  fake-psp:
+    ports:
+      - "3001:3001"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npm run dev
+
+  api:
+    ports:
+      - "3000:3000"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npm run dev
+
+  mongo:
+    ports:
+      - "27017:27017"
+  db:
+    ports:
+      - "5433:5432"
+
+  backoffice:
+    ports:
+      - "8000:5173"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npm run dev

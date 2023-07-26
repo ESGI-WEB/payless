@@ -1,5 +1,5 @@
 const {Sequelize} = require("sequelize");
-const {Payment, Operation, connection} = require("../db");
+const {Payment, Operation, connection} = require("../db/postgres");
 const ValidationError = require("../errors/ValidationError");
 const ServiceError = require("../errors/ServiceError");
 

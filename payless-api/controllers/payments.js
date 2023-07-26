@@ -2,7 +2,7 @@ const paymentService = require('../services/payment');
 const {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 const loader = new TwingLoaderFilesystem('./views');
 const twing = new TwingEnvironment(loader);
-const {Operation, User} = require('../db');
+const {Operation, User} = require('../db/postgres');
 
 module.exports = function () {
     return {

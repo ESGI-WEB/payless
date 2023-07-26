@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const { User } = require("../db");
+const { User } = require("../db/postgres");
 const ValidationError = require("../errors/ValidationError");
 const constants = require("../helpers/constants");
 const mailerService = require("./mailer");

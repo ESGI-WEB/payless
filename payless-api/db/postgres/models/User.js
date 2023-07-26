@@ -1,6 +1,6 @@
 const {Model, DataTypes} = require("sequelize");
-const mailerService = require("../../services/mailer");
-const constants = require("../../helpers/constants");
+const mailerService = require("../../../services/mailer");
+const constants = require("../../../helpers/constants");
 
 module.exports = function (connection) {
     class User extends Model {

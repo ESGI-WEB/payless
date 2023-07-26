@@ -5,7 +5,6 @@ const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 const authService = reactive({
 
     async login(email,password) {
-        console.log(API_BASE_URL);
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: {
@@ -15,7 +14,7 @@ const authService = reactive({
         });
 
         if (!response.ok) {
-            throw new Error(`Erreur de connexion: ${response.statusText}`);
+            throw new Error(`Login error: ${response.statusText}`);
         }
         const result = await response.json();
         localStorage.setItem('authToken', result.token);
@@ -44,7 +43,7 @@ const authService = reactive({
         })
 
         if (!response.ok) {
-            throw new Error(`Erreur d'inscription: ${response.statusText}`);
+            throw new Error(`Login error: ${response.statusText}`);
         }
 
         return await response.json();

@@ -34,6 +34,8 @@ export default {
                     return router.push("/admin");
                 } else if(authService.isMerchant()){
                     return router.push("/merchant");
+                } else{
+                    return router.push("/waiting")
                 }
             } catch (error) {
                 console.error('Error with the connection', error);

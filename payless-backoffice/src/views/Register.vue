@@ -81,11 +81,13 @@
 
 <script>
 import { ref } from 'vue';
+import {useRouter} from "vue-router";
 import authService from '../services/authService';
 
 export default {
     setup() {
 
+        const router = useRouter();
         const formData = ref({
             company_name: '',
             email: '',
@@ -106,6 +108,7 @@ export default {
         const submitForm = async () => {
             try {
                 await authService.register(formData.value);
+                await router.push("/login");
             } catch (error) {
                 console.error('Register error', error);
             }

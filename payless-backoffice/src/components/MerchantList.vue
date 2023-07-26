@@ -8,6 +8,7 @@
                 <th>Email</th>
                 <th>Company name</th>
                 <th>Role</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
@@ -19,7 +20,10 @@
                 <td>{{ merchant.role }}</td>
                 <td>
                     <button v-if="merchant.role === 'merchant-to-validate'" @click="validateMerchant(merchant.id)">
-                        Valider le rôle
+                        Validate Role
+                    </button>
+                    <button v-if="merchant.role === 'merchant-to-validate'" @click="refuseMerchant(merchant.id)">
+                        Refuse role
                     </button>
                 </td>
                 <td>
@@ -49,10 +53,14 @@ export default {
     components: {
         paginate: Paginate,
     },
+    data(){
+        return {componentKey : 0,}
+    },
     setup() {
         const merchants = ref([]);
         const currentPage = ref(1);
         const itemsPerPage = ref(10);
+        const componentKey = ref(0);
 
         onMounted(async () => {
             merchants.value = await merchantService.getAllMerchants();
@@ -62,8 +70,19 @@ export default {
             try {
                 await merchantService.validateMerchantRole(id);
                 merchants.value = await merchantService.getAllMerchants();
+                componentKey.value += 1;
             } catch (error) {
-                console.error('Erreur de validation du rôle du marchand', error);
+                console.error('Error validation', error);
+            }
+        };
+
+        const refuseMerchant = async (id) => {
+            try {
+                await merchantService.refuseMerchantRole(id);
+                merchants.value = await merchantService.getAllMerchants();
+                componentKey.value += 1;
+            } catch (error) {
+                console.error('Error validation refuse', error);
             }
         };
 
@@ -81,7 +100,7 @@ export default {
             currentPage.value = newPageNumber;
         };
 
-        return { merchants, validateMerchant, paginatedMerchants, pageCount, changePage};
+        return { merchants, validateMerchant, refuseMerchant, paginatedMerchants, pageCount, changePage, componentKey};
     },
 
 

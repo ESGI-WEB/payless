@@ -5,7 +5,6 @@ module.exports = function () {
     return {
         markAsDone: async function (req, res, next) {
             try {
-                console.log('markAsDone', req.params.uuid)
                 const [operation] = await operationService.update({
                     uuid: req.params.uuid,
                 }, {status: 'succeeded'});

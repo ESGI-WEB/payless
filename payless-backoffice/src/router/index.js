@@ -7,6 +7,7 @@ import authService from "../services/authService";
 import Dashboard from "../components/Dashboard.vue";
 import MerchantList from "../components/MerchantList.vue";
 import TransactionList from "../components/TransactionList.vue";
+import WaitingView from "../views/WaitingView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/merchant',
       name: 'Merchant',
       component: MerchantView,
+    },
+    {
+      path: '/waiting',
+      name: 'Waiting',
+      component: WaitingView,
     },
     {
       path: '/dashboard',

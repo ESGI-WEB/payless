@@ -10,8 +10,19 @@ const paymentRouter = require("./routes/payments")();
 const userRouter = require("./routes/users")();
 const operationRouter = require("./routes/operations")();
 
+var corsOptions = {
+  origin: async function (origin, callback) {
+    try {
+      const origins = await userService.getAllowedOrigins();
+      callback(null, origins);
+    } catch (e) {
+      callback(e, null);
+    }
+  }
+}
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(requestMiddleware);
 
 app.use(new SecurityRouter(userService));

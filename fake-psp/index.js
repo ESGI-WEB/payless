@@ -3,23 +3,11 @@ const app = express();
 const errorHandler = require("./middlewares/errorHandler");
 const cors = require("cors");
 const paymentRouter = require("./routes/payment")();
+const auth = require("./middlewares/auth");
 
 app.use(express.json());
 
-const allowedOrigins = [];
-if (process.env.NODE_ENV !== "production") {
-    allowedOrigins.push("http://localhost");
-}
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-};
-// app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(function (req, res, next) {
   if (["POST", "PUT", "PATCH"].includes(req.method)) {
@@ -30,10 +18,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/payments", paymentRouter);
-app.get("/ping", (req, res) => {
-  res.send("pong");
-});
+app.use("/payments", auth(), paymentRouter);
 
 app.use(errorHandler);
 

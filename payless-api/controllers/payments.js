@@ -20,7 +20,7 @@ module.exports = function () {
 
                 const payment = await paymentService.create(data);
 
-                res.status(200).json(paymentService.format(payment));
+                res.status(201).json(paymentService.format(payment));
             } catch (e) {
                 next(e);
             }
@@ -53,7 +53,7 @@ module.exports = function () {
                     token: jwt.sign({}, user.secret_token, {expiresIn: '1h'}), // temp token
                     merchant_id: user.id,
                     cancel_url: `${process.env.APP_URL}/payments/${payment.uuid}/cancel`,
-                    canceled_url: user.cancel_url,
+                    cancelled_url: user.cancel_url,
                     validate_url: `${process.env.APP_URL}/payments/${payment.uuid}/validate`,
                     confirmation_url: user.confirmation_url,
                 }).then((output) => {
@@ -105,7 +105,7 @@ module.exports = function () {
                     res.sendStatus(403);
                 }
 
-                const [paymentUpdated] = await paymentService.update({uuid: req.params.uuid}, {status: 'canceled'});
+                const [paymentUpdated] = await paymentService.update({uuid: req.params.uuid}, {status: 'cancelled'});
 
                 res.status(200).json(paymentService.format(paymentUpdated));
             } catch (e) {

@@ -7,19 +7,18 @@ import authService from "../services/authService";
 import Dashboard from "../components/Dashboard.vue";
 import MerchantList from "../components/MerchantList.vue";
 import TransactionList from "../components/TransactionList.vue";
-import WaitingPage from "../views/WaitingPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/login',
-      name: 'login',
+      name: 'Login',
       component: Login,
     },
     {
       path: '/register',
-      name: 'register',
+      name: 'Register',
       component: Register,
     },
     {

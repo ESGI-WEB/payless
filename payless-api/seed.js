@@ -3,7 +3,6 @@ const {faker} = require('@faker-js/faker');
 const {DataTypes} = require("sequelize");
 const {User} = require('./db/postgres');
 const constants = require("./helpers/constants");
-const bcrypt = require("bcryptjs");
 
 const seed = async () => {
     try {
@@ -17,7 +16,6 @@ const seed = async () => {
         const users = [];
         const currencies = constants.CURRENCIES;
         const userRoles = ['merchant', 'merchant-to-validate', 'refused'];
-        const salt = await bcrypt.genSalt(10);
 
         while (i < 20) {
             users.push({
@@ -31,7 +29,7 @@ const seed = async () => {
                 cancel_url: faker.internet.url(),
                 currency: currencies[Math.floor(Math.random() * currencies.length)],
                 email: i+faker.internet.email(),
-                password: await bcrypt.hash('Azerty1*', salt),
+                password: 'Azerty1*',
                 kbis: 'test.pdf',
                 role: userRoles[Math.floor(Math.random() * userRoles.length)],
             });
@@ -44,7 +42,9 @@ const seed = async () => {
             role: 'admin'
         });
 
-        await User.bulkCreate(users);
+        for (const user of users) {
+            await User.create(user);
+        }
 
     } catch (error) {
         console.error(error);

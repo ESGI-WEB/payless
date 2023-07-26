@@ -1,4 +1,5 @@
 const sequelize = require('../db');
+const {count} = require("../services/user");
 
 module.exports = function (Service) {
   return {
@@ -10,12 +11,19 @@ module.exports = function (Service) {
         ...criteria
       } = req.query;
       try {
+
+        const totalItem = await Service.count(criteria);
+
         const data = await Service.findAll(criteria, {
           offset: (_page - 1) * _itemsPerPage,
           limit: _itemsPerPage,
           order: _sort,
         });
-        res.json('format' in Service ? Service.format(data) : data);
+        //res.json('format' in Service ? Service.format(data) : data);
+        res.json({
+          totalItem,
+          data: 'format' in Service ? Service.format(data) : data,
+        });
       } catch (err) {
         next(err);
       }

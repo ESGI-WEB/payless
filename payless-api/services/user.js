@@ -23,7 +23,7 @@ module.exports = {
   create: async function (data) {
     try {
       const safeData = removeUnauthorizedFields(data);
-      if(!safeData.role || safeData.role !== 'admin') {
+      if (!safeData.role || safeData.role !== 'admin') {
         checkMerchantDataValidity(safeData);
       }
       const user = await User.create(safeData);
@@ -70,12 +70,17 @@ module.exports = {
   },
 
   format: function (users) {
-    if(users instanceof User) {
+    if (users instanceof User) {
       return users.format();
     }
 
     return users.map(user => user.format());
-  }
+  },
+  count: async function (criteria) {
+    return User.count({
+      where: criteria,
+    });
+  },
 };
 
 

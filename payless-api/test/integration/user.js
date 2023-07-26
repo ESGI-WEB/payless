@@ -33,8 +33,8 @@ describe('Integration - /users', function () {
             const expectedUsers = (await User.findAll({limit: 10})).map(user => user.format());
 
             assert.strictEqual(response.status, 200);
-            assert.strictEqual(response.body.length, 10);
-            assert.deepStrictEqual(response.body, expectedUsers)
+            assert.strictEqual(response.body.data.length, 10);
+            assert.deepStrictEqual(response.body.data, expectedUsers)
         });
         
         it('should return an array of users paginated', async function () {
@@ -45,8 +45,8 @@ describe('Integration - /users', function () {
             const expectedUsers = (await User.findAll({limit: 5, offset: 5})).map(user => user.format());
 
             assert.strictEqual(response.status, 200);
-            assert.strictEqual(response.body.length, 5);
-            assert.deepStrictEqual(response.body, expectedUsers)
+            assert.strictEqual(response.body.data.length, 5);
+            assert.deepStrictEqual(response.body.data, expectedUsers)
         });
         
         it('should return an array of users filtered', async function () {
@@ -57,7 +57,7 @@ describe('Integration - /users', function () {
             const expectedUsers = (await User.findAll({limit: 10, where: {role: 'merchant-to-validate'}})).map(user => user.format());
 
             assert.strictEqual(response.status, 200);
-            assert.deepStrictEqual(response.body, expectedUsers)
+            assert.deepStrictEqual(response.body.data, expectedUsers)
         });
         
         it('should return an array of users sorted', async function () {
@@ -68,7 +68,7 @@ describe('Integration - /users', function () {
             const expectedUsers = (await User.findAll({limit: 10, order: [['email', 'DESC']]})).map(user => user.format());
 
             assert.strictEqual(response.status, 200);
-            assert.deepStrictEqual(response.body, expectedUsers)
+            assert.deepStrictEqual(response.body.data, expectedUsers)
         });
         
         it('should throw error if not admin authenticated', async function () {

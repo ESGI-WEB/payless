@@ -12,7 +12,7 @@
             </tr>
             </thead>
             <tbody>
-            <template v-for="merchant in paginatedMerchants">
+            <template v-for="merchant in merchants">
             <tr v-if="merchant.role !== 'admin'" :key="merchant.id">
                 <td>{{ merchant.id }}</td>
                 <td>{{ merchant.email }}</td>
@@ -58,19 +58,23 @@ export default {
     },
     setup() {
         const merchants = ref([]);
+        const totalItems = ref(0);
         const currentPage = ref(1);
         const itemsPerPage = ref(10);
         const componentKey = ref(0);
 
         onMounted(async () => {
             merchants.value = await merchantService.getAllMerchants();
-
+            let result = await merchantService.getAllMerchants();
+            merchants.value = result.data;
+            totalItems.value = result.totalItem;
         });
         const validateMerchant = async (id) => {
             try {
                 await merchantService.validateMerchantRole(id);
-                merchants.value = await merchantService.getAllMerchants();
-                componentKey.value += 1;
+                const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
+                merchants.value = result.data;
+                totalItems.value = result.totalItem;
             } catch (error) {
                 console.error('Error validation', error);
             }
@@ -79,7 +83,9 @@ export default {
         const refuseMerchant = async (id) => {
             try {
                 await merchantService.refuseMerchantRole(id);
-                merchants.value = await merchantService.getAllMerchants();
+                const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
+                merchants.value = result.data;
+                totalItems.value = result.totalItem;
                 componentKey.value += 1;
             } catch (error) {
                 console.error('Error validation refuse', error);
@@ -87,20 +93,17 @@ export default {
         };
 
         const pageCount = computed(() => {
-            return Math.ceil(merchants.value.length / itemsPerPage.value);
+            return Math.ceil(totalItems.value / itemsPerPage.value);
         });
 
-        const paginatedMerchants = computed(() => {
-            const start = (currentPage.value - 1) * itemsPerPage.value;
-            const end = start + itemsPerPage.value;
-            return merchants.value.slice(start, end);
-        });
-
-        const changePage = (newPageNumber) => {
+        const changePage = async (newPageNumber) => {
             currentPage.value = newPageNumber;
+            const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
+            merchants.value = result.data;
+            totalItems.value = result.totalItem;
         };
 
-        return { merchants, validateMerchant, refuseMerchant, paginatedMerchants, pageCount, changePage, componentKey};
+        return { merchants, validateMerchant, refuseMerchant, pageCount, changePage, componentKey};
     },
 
 

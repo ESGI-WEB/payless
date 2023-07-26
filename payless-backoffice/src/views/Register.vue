@@ -25,7 +25,7 @@
             <div class="form-section">
                 <h2>Place</h2>
                 <div>
-                    <label for="address">Adresse</label>
+                    <label for="address">Address</label>
                     <input type="text" id="address" v-model="formData.address" required>
                 </div>
                 <div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="form-section">
-                <button type="submit">S'inscrire</button>
+                <button type="submit">Register</button>
                 <div class="link-container">
                     <router-link to="/login">Login</router-link>
                 </div>
@@ -107,7 +107,7 @@ export default {
             try {
                 await authService.register(formData.value);
             } catch (error) {
-                console.error('Erreur d\'inscription:', error);
+                console.error('Register error', error);
             }
         };
 

@@ -3,10 +3,10 @@
         <label for="email">Email:</label>
         <input type="email" id="email" v-model="formData.email" required>
 
-        <label for="password">Mot de passe:</label>
+        <label for="password">Password:</label>
         <input type="password" id="password" v-model="formData.password" required>
 
-        <button type="submit">Connexion</button>
+        <button type="submit">Sign in</button>
         <div class="link-container">
             <router-link to="/register" class="centre">Register</router-link>
         </div>
@@ -36,7 +36,7 @@ export default {
                     return router.push("/merchant");
                 }
             } catch (error) {
-                console.error('Erreur de connexion:', error);
+                console.error('Error with the connection', error);
             }
         };
 

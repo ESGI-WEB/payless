@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Vue Admin</h1>
+        <h1>Admin View</h1>
 
         <ul>
             <li><router-link to="/dashboard">Dashboard</router-link></li>
@@ -9,7 +9,7 @@
 
         </ul>
         <router-view/>
-        <button @click="logout">Déconnexion</button>
+        <button @click="logout">Logout</button>
     </div>
 </template>
 
@@ -32,7 +32,7 @@ export default {
                 await authService.logout();
                 await router.push('/login');
             } catch (error) {
-                console.error('Erreur de déconnexion:', error);
+                console.error('Logout Error', error);
             }
         };
 

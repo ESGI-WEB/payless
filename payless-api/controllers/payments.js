@@ -105,9 +105,9 @@ module.exports = function () {
                     res.sendStatus(403);
                 }
 
-                const [paymentUpdated] = await paymentService.update({uuid: req.params.uuid}, {status: 'cancelled'});
+                await paymentService.update({uuid: req.params.uuid}, {status: 'cancelled'});
 
-                res.status(200).json(paymentService.format(paymentUpdated));
+                res.sendStatus(200);
             } catch (e) {
                 next(e);
             }

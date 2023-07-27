@@ -34,7 +34,7 @@ async function createPaymentDocument(payment) {
     } catch (error) {
         console.error("Error creating payment document:", error);
     } finally {
-        closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
@@ -62,7 +62,7 @@ async function updatePaymentDocument(payment) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
@@ -88,7 +88,7 @@ async function createOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
@@ -127,7 +127,7 @@ async function updateOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating operations:", error);
     } finally {
-        closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 

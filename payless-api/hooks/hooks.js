@@ -9,11 +9,12 @@ async function createPaymentDocument(payment) {
         paymentCollection = await connectToDatabase();
 
         const paymentData = new Payment({
+
             payment_id: payment.id,
             merchant: {
                 company_name: user.company_name,
                 role: user.role,
-                id: user.uuid,
+                id: user.id,
                 email: user.email
             },
             order_field: {

@@ -178,8 +178,9 @@ module.exports = function () {
     },
     getChartData: async (req, res, next) => {
       const { ...criteria  } = req.query;
+      const user = req.user
       try {
-        const data = await paymentService.getChartData(criteria);
+        const data = await paymentService.getChartData(criteria, user);
         res.json(data);
       } catch (err) {
         next(err);

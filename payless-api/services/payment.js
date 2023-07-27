@@ -234,11 +234,11 @@ const getMerchant = async function (user) {
   try {
     paymentCollection = await connectToDatabase();
 
-    if (user.role = "merchant") {
+    if (user.role === "admin") {
       const cursor = await paymentCollection.aggregate([
         {
           $group: {
-            _id: "$merchant.company_name",
+            _id: "$merchant.id",
           },
         },
         {
@@ -247,9 +247,15 @@ const getMerchant = async function (user) {
             number_of_merchants: { $sum: 1 },
           },
         },
+        {
+          $project: {
+            _id: 0,
+            number_of_merchants: 1,
+          },
+        },
       ]);
       return await cursor.toArray();
-    } else if (user.role = "admin") {
+    } else if (user.role === "merchant") {
       const cursor = await paymentCollection.aggregate([
         {
           $group: {
@@ -260,6 +266,12 @@ const getMerchant = async function (user) {
           $group: {
             _id: null,
             number_of_customers: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            number_of_customers: 1,
           },
         },
       ]);
@@ -276,46 +288,92 @@ const getMerchant = async function (user) {
   }
 };
 
-const getChartData = async function (criteria = {}) {
+const getChartData = async function (criteria = {}, user) {
   let paymentCollection = null;
   try {
     paymentCollection = await connectToDatabase();
-
-    const matchCriteria = {};
-    if (criteria.startDate && criteria.endDate) {
-      matchCriteria.created_date = {
-        $gte: new Date(criteria.startDate),
-        $lte: new Date(criteria.endDate),
+    if (user.role === "merchant") {
+      const matchCriteria = {
+        $expr: {
+          $eq: [user.id.toString(), "$merchant.id"]
+        }
       };
+      if (criteria.startDate && criteria.endDate) {
+        matchCriteria.created_date = {
+          $gte: new Date(criteria.startDate),
+          $lte: new Date(criteria.endDate),
+        };
+      }
+
+      let dateFormat = "%Y-%m-%d";
+      if (criteria.time === "year") {
+        dateFormat = "%Y";
+      } else if (criteria.time === "month") {
+        dateFormat = "%Y-%m";
+      }
+
+      const cursor = await paymentCollection.aggregate([
+        {
+          $match: matchCriteria,
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: dateFormat, date: "$created_date" } },
+            total: { $sum: { $toDouble: "$total" } },
+          },
+        },
+        {
+          $project: {
+            date: "$_id",
+            total: 1,
+            _id: 0,
+          },
+        },
+      ]);
+
+      return await cursor.toArray();
+
+    } else if (user.role === "admini") {
+      const matchCriteria = {};
+      if (criteria.startDate && criteria.endDate) {
+        matchCriteria.created_date = {
+          $gte: new Date(criteria.startDate),
+          $lte: new Date(criteria.endDate),
+        };
+      }
+
+      let dateFormat = "%Y-%m-%d";
+      if (criteria.time === "year") {
+        dateFormat = "%Y";
+      } else if (criteria.time === "month") {
+        dateFormat = "%Y-%m";
+      }
+
+      const cursor = await paymentCollection.aggregate([
+        {
+          $match: matchCriteria,
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: dateFormat, date: "$created_date" } },
+            total: { $sum: { $toDouble: "$total" } },
+          },
+        },
+        {
+          $project: {
+            date: "$_id",
+            total: 1,
+            _id: 0,
+          },
+        },
+      ]);
+
+      return await cursor.toArray();
+
+    } else {
+      return []
     }
 
-    let dateFormat = "%Y-%m-%d";
-    if (criteria.time === "year") {
-      dateFormat = "%Y";
-    } else if (criteria.time === "month") {
-      dateFormat = "%Y-%m";
-    }
-
-    const cursor = await paymentCollection.aggregate([
-      {
-        $match: matchCriteria,
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: dateFormat, date: "$created_date" } },
-          total: { $sum: { $toDouble: "$total" } },
-        },
-      },
-      {
-        $project: {
-          date: "$_id",
-          total: 1,
-          _id: 0,
-        },
-      },
-    ]);
-
-    return await cursor.toArray();
   } catch (err) {
     console.error("Error while retrieving payment summary:", err);
   } finally {

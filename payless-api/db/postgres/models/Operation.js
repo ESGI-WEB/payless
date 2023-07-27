@@ -1,4 +1,5 @@
 const {Model, DataTypes} = require("sequelize");
+const {createOperationOnPaymentDocument, updateOperationOnPaymentDocument} = require("../../../hooks/hooks");
 
 module.exports = function (connection) {
     class Operation extends Model {
@@ -40,6 +41,9 @@ module.exports = function (connection) {
             tableName: "operation",
         }
     );
+
+    Operation.addHook("afterCreate", (operation) => createOperationOnPaymentDocument(operation));
+    Operation.addHook("afterUpdate", (operation) => updateOperationOnPaymentDocument(operation));
 
     return Operation;
 };

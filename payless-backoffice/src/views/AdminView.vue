@@ -25,6 +25,7 @@ export default {
     components: {
         Dashboard,
         MerchantList,
+        TransactionList
     },
     setup() {
         const logout = async () => {

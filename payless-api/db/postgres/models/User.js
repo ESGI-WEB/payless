@@ -1,5 +1,4 @@
 const {Model, DataTypes} = require("sequelize");
-const constants = require("../../helpers/constants");
 const jwt = require("jsonwebtoken");
 const constants = require("../../../helpers/constants");
 

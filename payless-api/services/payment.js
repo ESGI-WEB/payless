@@ -3,6 +3,7 @@ const {Payment, Operation, connection} = require("../db/postgres");
 const ValidationError = require("../errors/ValidationError");
 const ServiceError = require("../errors/ServiceError");
 const operationService = require("./operation");
+const {connectToDatabase} = require("../db/mongo");
 
 const findOneBy = async function (criteria = {}, options = {}) {
     return await Payment.findOne({
@@ -137,6 +138,27 @@ const validate = async function (uuid, data) {
     }
 };
 
+const findAll = async function (criteria = {}, options = {}) {
+    const paymentCollection = await connectToDatabase();
+    let query = paymentCollection.find(criteria);
+
+    if (options.order !== {}) {
+        query = query.sort(options.order);
+    }
+
+    if (options.offset) {
+        const offset = parseInt(options.offset)
+        query = query.skip(offset);
+    }
+
+    if (options.limit) {
+        const limit = parseInt(options.limit)
+        query = query.limit(limit);
+    }
+
+    return query.toArray();
+};
+
 const format = function (payments) {
     if (payments instanceof Payment) {
         return payments.format();
@@ -151,4 +173,5 @@ module.exports = {
     update,
     validate,
     format,
+    findAll,
 };

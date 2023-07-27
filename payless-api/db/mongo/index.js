@@ -1,21 +1,43 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const uri = process.env.MONGO_DATABASE_URL;
 
-const client = new MongoClient(uri, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
+let client = null;
+let paymentCollection = null;
+
+async function connectToDatabase() {
+    if (!client) {
+        client = new MongoClient(uri, {
+            serverApi: {
+                version: '1',
+                strict: true,
+                deprecationErrors: true,
+            },
+        });
+
+        try {
+            await client.connect();
+            console.log('Connected to MongoDB!');
+            const db = client.db('payless_prod');
+            paymentCollection = db.collection('payment');
+        } catch (error) {
+            console.error('Error connecting to MongoDB:', error);
+            throw error;
+        }
     }
-});
-async function run() {
-    try {
-        await client.connect();
-        await client.db("payless_prod").command({ping: 1});
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        await client.close();
+
+    return paymentCollection;
+}
+
+async function closeDatabaseConnection() {
+    if (client) {
+        try {
+            await client.close();
+            console.log('MongoDB connection closed.');
+        } catch (error) {
+            console.error('Error closing MongoDB connection:', error);
+            throw error;
+        }
     }
 }
 
-run().catch(console.dir);
+module.exports = { connectToDatabase, closeDatabaseConnection };

@@ -5,6 +5,7 @@ const twing = new TwingEnvironment(loader);
 const {Operation, User} = require('../db/postgres');
 const userService = require('../services/user');
 const jwt = require("jsonwebtoken");
+const operationService = require("../services/operation");
 
 module.exports = function () {
     return {
@@ -111,6 +112,24 @@ module.exports = function () {
             } catch (e) {
                 next(e);
             }
-        }
+        },
+        cget: async (req, res, next) => {
+            const {
+                _page = 1,
+                _itemsPerPage = 10,
+                _sort = {},
+                ...criteria
+            } = req.query;
+            try {
+                const data = await paymentService.findAll(criteria, {
+                    offset: (_page - 1) * _itemsPerPage,
+                    limit: _itemsPerPage,
+                    order: _sort,
+                });
+                res.json(data);
+            } catch (err) {
+                next(err);
+            }
+        },
     };
 };

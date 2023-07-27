@@ -1,10 +1,13 @@
 const Payment = require("../db/mongo/models/Payment.js");
 const { connectToDatabase, closeDatabaseConnection } = require('../db/mongo/index');
+const {parse} = require("nodemon/lib/cli");
 
 async function createPaymentDocument(payment) {
+    let paymentCollection = null;
+
     try {
         const user = await payment.getUser();
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const paymentData = new Payment({
             payment_id: payment.id,
@@ -31,13 +34,15 @@ async function createPaymentDocument(payment) {
     } catch (error) {
         console.error("Error creating payment document:", error);
     } finally {
-        //await closeDatabaseConnection();
+        closeDatabaseConnection();
     }
 }
 
 async function updatePaymentDocument(payment) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const { status, order_field } = payment;
 
@@ -57,13 +62,15 @@ async function updatePaymentDocument(payment) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        //await closeDatabaseConnection();
+        closeDatabaseConnection();
     }
 }
 
 async function createOperationOnPaymentDocument(operation) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const operationData = {
             id: operation.id.toString(),
@@ -81,13 +88,15 @@ async function createOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        // await closeDatabaseConnection();
+        closeDatabaseConnection();
     }
 }
 
 async function updateOperationOnPaymentDocument(operation) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const paymentDocument = await paymentCollection.findOne({ payment_id: operation.PaymentId.toString() });
 
@@ -96,7 +105,9 @@ async function updateOperationOnPaymentDocument(operation) {
             return;
         }
 
-        const operationToUpdate = paymentDocument.operations.find(op => op.id === operation.id);
+        const operationToUpdate = paymentDocument.operations.find(op => {
+            return parseInt(op.id) === operation.id
+        });
 
         if (!operationToUpdate) {
             console.error("Operation not found for OperationId:", operation.id);
@@ -116,7 +127,7 @@ async function updateOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating operations:", error);
     } finally {
-        //await closeDatabaseConnection();
+        closeDatabaseConnection();
     }
 }
 

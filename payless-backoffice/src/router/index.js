@@ -71,6 +71,8 @@ router.beforeEach((to, from, next) => {
     next('/login');
   } else if (to.path === '/merchant' && !authService.isMerchant()) {
     next('/login');
+  } else if (to.path === '/waiting'){
+    next('/login');
   } else {
     next();
   }

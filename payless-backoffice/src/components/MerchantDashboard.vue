@@ -14,7 +14,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import ChartComponent from './Charts.vue'
-import DashboardService from '../services/DashboardService'
+import DashboardService from '../services/dashboardService'
 
 const loading = ref(true)
 const charts = ref([])

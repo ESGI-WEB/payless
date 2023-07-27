@@ -1,6 +1,23 @@
-@import 'base.css';
-
-#app {
-
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: Amiko;
+    background-color: #FDF7F2;
 }
 
+@font-face {
+    font-family: Amiko;
+    src: url("../assets/fonts/Amiko-Regular.ttf");
+}
+
+@font-face {
+    font-family: Amaranth;
+    src: url("../assets/fonts/Amaranth-Regular.ttf");
+}
+
+@font-face {
+    font-family: Amaranth-Bold;
+    src: url("../assets/fonts/Amaranth-Bold.ttf");
+}

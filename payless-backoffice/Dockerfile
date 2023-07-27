@@ -20,6 +20,7 @@ FROM nginx:alpine as production-stage
 
 # Copiez les fichiers construits depuis l'étape de construction vers le répertoire de l'application Nginx
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY custom.conf /etc/nginx/conf.d/default.conf
 
 # Exposez le port 80 pour HTTPS
 EXPOSE 80

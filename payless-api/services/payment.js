@@ -172,7 +172,7 @@ const findAll = async function (criteria = {}, options = {}) {
     }
 
     return await query.toArray();
-  } catch (e) {
+  } catch (err) {
     console.error("Error while retrieving payment summary:", err);
   } finally {
     if (paymentCollection) {

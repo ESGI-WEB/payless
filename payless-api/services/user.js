@@ -102,6 +102,7 @@ checkMerchantDataValidity = function (user, checkOnlyPassedFields = false) {
     'merchant_url',
     'confirmation_url',
     'cancel_url',
+    'webhook_url',
     'currency',
     'kbis',
     'email',

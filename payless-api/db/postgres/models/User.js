@@ -72,27 +72,21 @@ module.exports = function (connection) {
             },
             company_name: {
                 type: DataTypes.STRING,
-                // allowNull: false,
             },
             zip_code: {
                 type: DataTypes.STRING,
-                // allowNull: false,
             },
             city: {
                 type: DataTypes.STRING,
-                // allowNull: false,
             },
             address: {
                 type: DataTypes.STRING,
-                // allowNull: false,
             },
             country: {
                 type: DataTypes.STRING,
-                // allowNull: false,
             },
             merchant_url: {
                 type: DataTypes.STRING,
-                // allowNull: false,
                 validate: {
                     is: function (value) {
                         if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
@@ -103,7 +97,6 @@ module.exports = function (connection) {
             },
             confirmation_url: {
                 type: DataTypes.STRING,
-                // allowNull: false,
                 validate: {
                     is: function (value) {
                         if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
@@ -114,7 +107,6 @@ module.exports = function (connection) {
             },
             cancel_url: {
                 type: DataTypes.STRING,
-                // allowNull: false,
                 validate: {
                     is: function (value) {
                         if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
@@ -123,9 +115,18 @@ module.exports = function (connection) {
                     },
                 }
             },
+            webhook_url: {
+                type: DataTypes.STRING,
+                validate: {
+                    is: function (value) {
+                        if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
+                            throw new Error("User.webhook is not valid");
+                        }
+                    },
+                }
+            },
             currency: {
                 type: DataTypes.ENUM(...constants.CURRENCIES),
-                // allowNull: false,
                 validate: {
                     isIn: function (value) {
                         if (!constants.CURRENCIES.includes(value)) {

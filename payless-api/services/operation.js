@@ -1,5 +1,5 @@
 const {Sequelize} = require("sequelize");
-const {Operation} = require("../db");
+const {Operation} = require("../db/postgres");
 const ValidationError = require("../errors/ValidationError");
 
 module.exports = {

@@ -21,9 +21,6 @@ services:
         npm install
         npm run dev
 
-  mongo:
-    ports:
-      - "27017:27017"
   db:
     ports:
       - "5433:5432"

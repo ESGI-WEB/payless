@@ -1,6 +1,7 @@
 // fill your database with test data, on every running tests, your db will be filled with these data
 const {faker} = require('@faker-js/faker');
-const {User} = require('./db');
+const {DataTypes} = require("sequelize");
+const {User} = require('./db/postgres');
 const constants = require("./helpers/constants");
 
 const seed = async () => {

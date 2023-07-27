@@ -34,17 +34,6 @@ services:
       - fake-psp
       - payless-network
 
-  mongo:
-    image: mongo
-    networks:
-      - fake-psp
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - db-data:/data/db
-    working_dir: /usr/local/sampleCollections
-
   db:
     image: postgres
     networks:

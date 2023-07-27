@@ -37,16 +37,10 @@ const authService = reactive({
             }
         });
 
-        const response = await fetch(`${API_BASE_URL}/register`, {
+        return await fetch(`${API_BASE_URL}/register`, {
             method: 'POST',
             body: data,
-        })
-
-        if (!response.ok) {
-            throw new Error(`Login error: ${response.statusText}`);
-        }
-
-        return await response.json();
+        });
     },
 
     isLoggedIn() {

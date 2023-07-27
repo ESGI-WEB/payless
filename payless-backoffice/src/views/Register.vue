@@ -7,18 +7,17 @@
                 <div>
                     <label for="company_name">Company Name</label>
                     <input type="text" id="company_name" v-model="formData.company_name" required>
+                    <p class="error" v-for="(error, index) in errors.company_name" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="email">Email</label>
                     <input type="email" id="email" v-model="formData.email" required>
+                    <p class="error" v-for="(error, index) in errors.email" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="password">Password</label>
                     <input type="password" id="password" v-model="formData.password" required>
-                </div>
-                <div>
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" v-model="formData.confirmpassword" required>
+                    <p class="error" v-for="(error, index) in errors.password" :key="index">{{error}}</p>
                 </div>
             </div>
 
@@ -27,18 +26,22 @@
                 <div>
                     <label for="address">Address</label>
                     <input type="text" id="address" v-model="formData.address" required>
+                    <p class="error" v-for="(error, index) in errors.address" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="city">City</label>
                     <input type="text" id="city" v-model="formData.city" required>
+                    <p class="error" v-for="(error, index) in errors.city" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="zip_code">Zip Code</label>
-                    <input type="number" id="zip_code" v-model="formData.zip_code" required>
+                    <input type="text" id="zip_code" v-model="formData.zip_code" required>
+                    <p class="error" v-for="(error, index) in errors.zip_code" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="country">Country</label>
                     <input type="text" id="country" v-model="formData.country" required>
+                    <p class="error" v-for="(error, index) in errors.country" :key="index">{{error}}</p>
                 </div>
             </div>
             <div class="form-section">
@@ -46,14 +49,22 @@
                 <div>
                     <label for="confirmation_url">Redirect URL for confirmation </label>
                     <input type="text" id="confirmation_url" v-model="formData.confirmation_url" required>
+                    <p class="error" v-for="(error, index) in errors.confirmation_url" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="cancel_url">Redirect URL for cancellation</label>
                     <input type="text" id="cancel_url" v-model="formData.cancel_url" required>
+                    <p class="error" v-for="(error, index) in errors.cancel_url" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="merchant_url">Merchant URL</label>
                     <input type="text" id="merchant_url" v-model="formData.merchant_url" required>
+                    <p class="error" v-for="(error, index) in errors.merchant_url" :key="index">{{error}}</p>
+                </div>
+                <div>
+                    <label for="merchant_url">Webhook URL</label>
+                    <input type="text" id="merchant_url" v-model="formData.webhook_url" required>
+                    <p class="error" v-for="(error, index) in errors.webhook_url" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <select v-model="formData.currency">
@@ -63,10 +74,12 @@
                         <option>CHF</option>
                         <option>GBP</option>
                     </select>
+                    <p class="error" v-for="(error, index) in errors.currency" :key="index">{{error}}</p>
                 </div>
                 <div>
                     <label for="kbis">KBIS</label>
                     <input type="file" id="kbis" @change="keepKbisFile">
+                    <p class="error" v-for="(error, index) in errors.kbis" :key="index">{{error}}</p>
                 </div>
             </div>
             <div class="form-section">
@@ -79,44 +92,52 @@
     </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import {reactive, ref} from 'vue';
 import {useRouter} from "vue-router";
 import authService from '../services/authService';
 
-export default {
-    setup() {
+const router = useRouter();
+const formData = ref({
+    company_name: '',
+    email: '',
+    password: '',
+    address: '',
+    zip_code:'',
+    city: '',
+    country: '',
+    kbis: null,
+    confirmation_url: '',
+    cancel_url: '',
+    merchant_url:'',
+    webhook_url:'',
+    currency: '',
+});
 
-        const router = useRouter();
-        const formData = ref({
-            company_name: '',
-            email: '',
-            password: '',
-            address: '',
-            zip_code:'',
-            city: '',
-            country: '',
-            kbis: null,
-            confirmation_url: '',
-            cancel_url: '',
-            merchant_url:'',
-            currency: '',
-        });
-        const keepKbisFile = (event) => {
-            formData.value.kbis = event.target.files[0];
-        };
-        const submitForm = async () => {
-            try {
-                await authService.register(formData.value);
-                await router.push("/login");
-            } catch (error) {
-                console.error('Register error', error);
-            }
-        };
+const errors = reactive({});
 
-        return { formData, submitForm, keepKbisFile };
-    },
+const keepKbisFile = (event) => {
+    formData.value.kbis = event.target.files[0];
 };
+
+const submitForm = async () => {
+    try {
+        for(const key in errors) {
+            errors[key] = [];
+        }
+
+        const response = await authService.register(formData.value);
+
+        if (response.status === 201) {
+          await router.push("/login");
+        } else {
+          Object.assign(errors, await response.json());
+        }
+    } catch (error) {
+        console.error('Register error', error);
+    }
+};
+
 </script>
 
 <style scoped>
@@ -185,5 +206,11 @@ button:hover {
 .link-container {
     text-align: center;
     margin-top: 10px;
+}
+
+.error {
+  color: red;
+  font-size: 0.8em;
+  margin: 0 0 10px 0;
 }
 </style>

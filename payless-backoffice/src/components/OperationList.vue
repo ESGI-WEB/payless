@@ -22,19 +22,13 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue';
 import operationService from '../services/operationService';
 
-export default {
-    setup() {
-        const operations = ref([]);
+const operations = ref([]);
 
-        onMounted(async () => {
-            operations.value = await operationService.getAllOperation();
-        });
-
-        return { operations };
-    },
-};
+onMounted(async () => {
+    operations.value = await operationService.getAllOperation();
+});
 </script>

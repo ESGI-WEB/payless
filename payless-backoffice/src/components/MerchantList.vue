@@ -13,24 +13,24 @@
             </thead>
             <tbody>
             <template v-for="merchant in merchants">
-            <tr v-if="merchant.role !== 'admin'" :key="merchant.id">
-                <td>{{ merchant.id }}</td>
-                <td>{{ merchant.email }}</td>
-                <td>{{ merchant.company_name }}</td>
-                <td>{{ merchant.role }}</td>
-                <td>
-                    <button v-if="merchant.role === 'merchant-to-validate'" @click="validateMerchant(merchant.id)">
-                        Validate Role
-                    </button>
-                    <button v-if="merchant.role === 'merchant-to-validate'" @click="refuseMerchant(merchant.id)">
-                        Refuse role
-                    </button>
-                </td>
-                <td>
-                    <span v-if="merchant.role === 'merchant'">Validate</span>
-                    <span v-if="merchant.role === 'refused'">Refuse</span>
-                </td>
-            </tr>
+                <tr v-if="merchant.role !== 'admin'" :key="merchant.id">
+                    <td>{{ merchant.id }}</td>
+                    <td>{{ merchant.email }}</td>
+                    <td>{{ merchant.company_name }}</td>
+                    <td>{{ merchant.role }}</td>
+                    <td>
+                        <button v-if="merchant.role === 'merchant-to-validate'" @click="validateMerchant(merchant.id)">
+                            Validate Role
+                        </button>
+                        <button v-if="merchant.role === 'merchant-to-validate'" @click="refuseMerchant(merchant.id)">
+                            Refuse role
+                        </button>
+                    </td>
+                    <td>
+                        <span v-if="merchant.role === 'merchant'">Validate</span>
+                        <span v-if="merchant.role === 'refused'">Refuse</span>
+                    </td>
+                </tr>
             </template>
             </tbody>
         </table>
@@ -45,58 +45,49 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, computed, nextTick } from 'vue';
 import merchantService from '../services/merchantService';
 import Paginate from 'vuejs-paginate-next';
 
-export default {
-    components: {
-        paginate: Paginate,
-    },
-    setup() {
-        const merchants = ref([]);
-        const totalItems = ref(0);
-        const currentPage = ref(1);
-        const itemsPerPage = ref(10);
+const merchants = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
-        const fetchMerchants = async () => {
-            let result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
-            merchants.value = result.data;
-            totalItems.value = result.totalItem;
-        };
+const fetchMerchants = async () => {
+    let result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
+    merchants.value = result.data;
+    totalItems.value = result.totalItem;
+};
 
-        onMounted(fetchMerchants);
+onMounted(fetchMerchants);
 
-        const validateMerchant = async (id) => {
-            try {
-                await merchantService.validateMerchantRole(id);
-                await nextTick(fetchMerchants);
-            } catch (error) {
-                console.error('Error validation', error);
-            }
-        };
+const validateMerchant = async (id) => {
+    try {
+        await merchantService.validateMerchantRole(id);
+        await nextTick(fetchMerchants);
+    } catch (error) {
+        console.error('Error validation', error);
+    }
+};
 
-        const refuseMerchant = async (id) => {
-            try {
-                await merchantService.refuseMerchantRole(id);
-                await nextTick(fetchMerchants);
-            } catch (error) {
-                console.error('Error validation refuse', error);
-            }
-        };
+const refuseMerchant = async (id) => {
+    try {
+        await merchantService.refuseMerchantRole(id);
+        await nextTick(fetchMerchants);
+    } catch (error) {
+        console.error('Error validation refuse', error);
+    }
+};
 
-        const pageCount = computed(() => {
-            return Math.ceil(totalItems.value / itemsPerPage.value);
-        });
+const pageCount = computed(() => {
+    return Math.ceil(totalItems.value / itemsPerPage.value);
+});
 
-        const changePage = async (newPageNumber) => {
-            currentPage.value = newPageNumber;
-            await nextTick(fetchMerchants);
-        };
-
-        return { merchants, validateMerchant, refuseMerchant, pageCount, changePage};
-    },
+const changePage = async (newPageNumber) => {
+    currentPage.value = newPageNumber;
+    await nextTick(fetchMerchants);
 };
 </script>
 
@@ -147,6 +138,4 @@ export default {
 :deep(.active-page) {
     color: red;
 }
-
 </style>
-

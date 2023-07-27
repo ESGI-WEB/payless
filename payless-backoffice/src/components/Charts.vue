@@ -4,46 +4,35 @@
     </div>
 </template>
 
-<script>
-import { onMounted, ref, watch } from 'vue'
+<script setup>
+import { ref, onMounted, watchEffect } from 'vue'
 import { Chart } from 'chart.js'
 
-export default {
-    props: {
-        data: Object,
-        options: Object
-    },
-    setup(props) {
-        const canvas = ref(null)
-        let chart = null
+const props = defineProps({
+    data: Object,
+    options: Object
+})
 
-        watch(() => props.data, () => {
-            if (chart) {
-                chart.destroy()
-                chart = null
-            }
-            chart = new Chart(canvas.value, {
-                type: 'line', // Changez ceci pour le type de graphique que vous voulez
-                data: props.data,
-                options: props.options
-            })
-        }, { deep: true, immediate: true })
+const canvas = ref(null)
+let chart = null
 
-        onMounted(() => {
-            chart = new Chart(canvas.value, {
-                type: 'line', // Changez ceci pour le type de graphique que vous voulez
-                data: props.data,
-                options: props.options
-            })
-        })
-
-        return {
-            canvas
-        }
+watchEffect(() => {
+    if (chart) {
+        chart.destroy()
+        chart = null
     }
-}
-</script>
+    chart = new Chart(canvas.value, {
+        type: 'line', // Change this for the type of chart you want
+        data: props.data,
+        options: props.options
+    })
+})
 
-<style scoped>
-/* Ajoutez ici les styles pour votre composant */
-</style>
+onMounted(() => {
+    chart = new Chart(canvas.value, {
+        type: 'line', // Change this for the type of chart you want
+        data: props.data,
+        options: props.options
+    })
+})
+</script>

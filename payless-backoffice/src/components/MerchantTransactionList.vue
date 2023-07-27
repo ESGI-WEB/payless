@@ -9,24 +9,21 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import merchantService from '../services/merchantService';
 
-export default {
-    name: 'MerchantTransactionList',
-    data() {
-        return {
-            transactions: [],
-            merchantId: null
-        };
-    },
-    async created() {
-        try {
-            this.merchantId = this.$route.params.id;
-            this.transactions = await merchantService.getMerchantTransactions(this.merchantId);
-        } catch (error) {
-            console.error('Erreur lors de la récupération des transactions du marchand', error);
-        }
-    },
-};
+const route = useRoute();
+const merchantId = ref(null);
+const transactions = ref([]);
+
+onMounted(async () => {
+    try {
+        merchantId.value = route.params.id;
+        transactions.value = await merchantService.getMerchantTransactions(merchantId.value);
+    } catch (error) {
+        console.error('Error payment merchant', error);
+    }
+});
 </script>

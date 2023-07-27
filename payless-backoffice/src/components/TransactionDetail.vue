@@ -13,23 +13,20 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import transactionService from '../services/transactionService';
+import { useRoute } from 'vue-router';
 
-export default {
-    name: 'TransactionDetails',
-    data() {
-        return {
-            transaction: null,
-        };
-    },
-    async created() {
-        try {
-            const transactionId = this.$route.params.id;
-            this.transaction = await transactionService.getTransactionDetails(transactionId);
-        } catch (error) {
-            console.error('Transaction details error ', error);
-        }
-    },
-};
+const route = useRoute();
+const transaction = ref(null);
+
+onMounted(async () => {
+    try {
+        const transactionId = route.params.id;
+        transaction.value = await transactionService.getTransactionDetails(transactionId);
+    } catch (error) {
+        console.error('Transaction details error ', error);
+    }
+});
 </script>

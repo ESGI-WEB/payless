@@ -13,37 +13,31 @@
     </form>
 </template>
 
-<script>
-import {ref} from 'vue';
-import {useRouter} from "vue-router";
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from "vue-router";
 import authService from '../services/authService';
 
-export default {
-    setup() {
-        const router = useRouter();
+const router = useRouter();
 
-        const formData = ref({
-            email: '',
-            password: '',
-        });
+const formData = ref({
+    email: '',
+    password: '',
+});
 
-        const submitForm = async () => {
-            try {
-                await authService.login(formData.value.email, formData.value.password);
-                if(authService.isAdmin()){
-                    return router.push("/admin");
-                } else if(authService.isMerchant()){
-                    return router.push("/merchant");
-                } else{
-                    return router.push("/waiting")
-                }
-            } catch (error) {
-                console.error('Error with the connection', error);
-            }
-        };
-
-        return {formData, submitForm};
-    },
+const submitForm = async () => {
+    try {
+        await authService.login(formData.value.email, formData.value.password);
+        if(authService.isAdmin()){
+            return router.push("/admin");
+        } else if(authService.isMerchant()){
+            return router.push("/merchant");
+        } else{
+            return router.push("/waiting")
+        }
+    } catch (error) {
+        console.error('Error with the connection', error);
+    }
 };
 </script>
 

@@ -6,37 +6,24 @@
             <li><router-link to="/dashboard">Dashboard</router-link></li>
             <li><router-link to="/merchantlist">Merchant List </router-link></li>
             <li><router-link to="/transaction">Transaction List </router-link></li>
-
         </ul>
+
         <router-view/>
         <button @click="logout">Logout</button>
     </div>
 </template>
 
-<script>
-import Dashboard from '../components/Dashboard.vue';
-import MerchantList from '../components/MerchantList.vue';
+<script setup>
 import authService from '../services/authService';
-import TransactionList from "../components/TransactionList.vue";
 import router from "../router";
 
-export default {
-    components: {
-        Dashboard,
-        MerchantList,
-        TransactionList
-    },
-    setup() {
-        const logout = async () => {
-            try {
-                await authService.logout();
-                await router.push('/login');
-            } catch (error) {
-                console.error('Logout Error', error);
-            }
-        };
-
-        return { logout };
-    },
+const logout = async () => {
+    try {
+        await authService.logout();
+        await router.push('/login');
+    } catch (error) {
+        console.error('Logout Error', error);
+    }
 };
 </script>
+

@@ -32,35 +32,29 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import transactionService from '../services/transactionService';
 
-export default {
-    name: 'TransactionList',
-    data() {
-        return {
-            transactions: [],
-            searchTerm: '',
-            searchCriterion: '',
-        };
-    },
-    async created() {
+const transactions = ref([]);
+const searchTerm = ref('');
+const searchCriterion = ref('');
+
+onMounted(async () => {
+    try {
+        transactions.value = await transactionService.getAllTransactions(searchTerm.value, searchCriterion.value);
+    } catch (error) {
+        console.error('Transaction error', error);
+    }
+});
+
+const searchTransactions = async () => {
+    if (searchCriterion.value && searchTerm.value) {
         try {
-            this.transactions = await transactionService.getAllTransactions(this.searchTerm, this.searchCriterion);
+            transactions.value = await transactionService.searchTransactions(searchCriterion.value, searchTerm.value);
         } catch (error) {
-            console.error('Transaction error', error);
+            console.error('Search error', error);
         }
-    },
-    methods: {
-        async searchTransactions() {
-            if (this.searchCriterion && this.searchTerm) {
-                try {
-                    this.transactions = await transactionService.searchTransactions(this.searchCriterion, this.searchTerm);
-                } catch (error) {
-                    console.error('Search error', error);
-                }
-            }
-        },
-    },
+    }
 };
 </script>

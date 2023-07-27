@@ -125,6 +125,7 @@ module.exports = function () {
             { status: "cancelled" }
         );
 
+        await payment.notify('cancelled');
         res.sendStatus(200);
       } catch (e) {
         next(e);

@@ -13,9 +13,13 @@ module.exports = function () {
                     return res.sendStatus(404);
                 }
 
+                const payment = await operation.getPayment();
+
                 if (operation.type === 'capture') {
                     await paymentService.update({id: operation.PaymentId}, {status: 'succeeded'});
                 }
+
+                await payment.notify('succeeded');
 
                 res.json(operationService.format(operation));
             } catch (e) {

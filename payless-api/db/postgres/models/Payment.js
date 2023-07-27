@@ -1,4 +1,5 @@
 const {Model, DataTypes} = require("sequelize");
+const jwt = require("jsonwebtoken");
 const constants = require("../../../helpers/constants");
 const { createPaymentDocument, updatePaymentDocument } = require("../../../hooks/hooks");
 
@@ -7,6 +8,30 @@ module.exports = function (connection) {
 
         generateLink() {
             return `${process.env.APP_URL}/payments/${this.uuid}/checkout`;
+        }
+
+        async notify(status = 'succeeded') {
+            try {
+                const user = await this.getUser();
+                if (user.webhook_url) {
+                    const jwt = require('jsonwebtoken');
+                    const token = jwt.sign({
+                        payment: this.format(),
+                        status,
+                    }, user.secret_token);
+                    console.log(token)
+                    await fetch(user.webhook_url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                }
+            } catch (e) {
+                console.error(e);
+                // do nothing if client fail
+            }
         }
 
         format() {

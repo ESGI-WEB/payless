@@ -1,18 +1,20 @@
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 export default {
 
-    async getAllTransactions() {
-        const response = await fetch('${API_BASE_URL}/payment/', {
+    async getAllTransactions(page = 1, limit = 10) {
+        const response = await fetch(`${API_BASE_URL}/payments?_page=${page}&_itemsPerPage=${limit}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             },
         });
 
         if (!response.ok) {
-            throw new Error(`Error on payment: ${response.statusText}`);
+            const text = await response.text();
+            throw new Error(`Error on payment: ${response.statusText}, Response: ${text}`);
         }
 
         const result = await response.json();
+        console.log(result)
         return result;
     },
 
@@ -26,6 +28,23 @@ export default {
         return await response.json();
     },
 
+    async searchTransactions(searchCriterion, searchTerm) {
+        const response = await fetch(`${API_BASE_URL}/payments?${searchCriterion}=${searchTerm}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error on transaction search: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return result;
+    },
+
+
+    /*
     async searchTransactions(searchTerm) {
         const response = await fetch(`${API_BASE_URL}/payment}`, {
             headers: {
@@ -41,7 +60,7 @@ export default {
         return result;
     },
 
-    /*
+
     async refundTransaction(transactionId, amount) {
         const response = await fetch(`/${API_BASE_URL}/payment/${transactionId}/refund`, {
             method: 'GET',

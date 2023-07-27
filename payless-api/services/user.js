@@ -1,5 +1,5 @@
-const { Sequelize } = require("sequelize");
-const { User } = require("../db");
+const { Sequelize, Op } = require("sequelize");
+const { User } = require("../db/postgres");
 const ValidationError = require("../errors/ValidationError");
 const constants = require("../helpers/constants");
 const mailerService = require("./mailer");
@@ -68,7 +68,6 @@ module.exports = {
       where: criteria,
     });
   },
-
   format: function (users) {
     if (users instanceof User) {
       return users.format();
@@ -80,6 +79,15 @@ module.exports = {
     return User.count({
       where: criteria,
     });
+  },
+  getAllowedOrigins: async function () {
+    const users = await User.findAll({
+      where: {
+        role: {[Op.in]: ['merchant', 'admin']},
+      },
+    });
+
+    return [...users.map(user => user.merchant_url), process.env.BACKOFFICE_URL];
   },
 };
 

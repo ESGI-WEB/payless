@@ -1,12 +1,34 @@
 <template>
     <div>
-        <h1>List of payment</h1>
-        <input v-model="searchTerm" @input="search" placeholder="Search transactions..." />
-        <ul>
-            <li v-for="transaction in transactions" :key="transaction.id">
-                <router-link :to="`/transaction/${transaction.id}`">{{ transaction.id }}</router-link>
-            </li>
-        </ul>
+        <h1>List of Transactions</h1>
+        <select v-model="searchCriterion">
+            <option value="">Choose a criterion</option>
+            <option value="merchant.company_name">Merchant</option>
+            <option value="total">Total</option>
+            <option value="currency">Currency</option>
+            <option value="status">Status</option>
+        </select>
+        <input type="text" v-model="searchTerm" placeholder="Search Transactions..." @input="searchTransactions">
+        <table>
+            <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Merchant</th>
+                <th>Total</th>
+                <th>Currency</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="transaction in transactions" :key="transaction._id">
+                <td>{{ transaction.payment_id }}</td>
+                <td>{{ transaction.merchant.company_name }}</td>
+                <td>{{ transaction.total }}</td>
+                <td>{{ transaction.currency }}</td>
+                <td>{{ transaction.status }}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -18,25 +40,27 @@ export default {
     data() {
         return {
             transactions: [],
-            searchTerm: ''
+            searchTerm: '',
+            searchCriterion: '',
         };
-    },
-    methods: {
-        async search() {
-            try {
-                this.transactions = await transactionService.searchTransactions(this.searchTerm);
-            } catch (error) {
-                console.error('Search error', error);
-            }
-        }
     },
     async created() {
         try {
-            this.transactions = await transactionService.getAllTransactions();
+            this.transactions = await transactionService.getAllTransactions(this.searchTerm, this.searchCriterion);
         } catch (error) {
-            console.error('Payment error', error);
+            console.error('Transaction error', error);
         }
+    },
+    methods: {
+        async searchTransactions() {
+            if (this.searchCriterion && this.searchTerm) {
+                try {
+                    this.transactions = await transactionService.searchTransactions(this.searchCriterion, this.searchTerm);
+                } catch (error) {
+                    console.error('Search error', error);
+                }
+            }
+        },
     },
 };
 </script>
-

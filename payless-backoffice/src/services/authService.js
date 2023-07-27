@@ -1,4 +1,4 @@
-import {reactive, provide} from 'vue';
+import {reactive} from 'vue';
 import VueJwtDecode from 'vue-jwt-decode';
 
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;

@@ -1,53 +1,40 @@
 <template>
-    <div>
-        <h2>Dashboard</h2>
-        <div class="chart-container">
-            <canvas ref="chart"></canvas>
+    <div class="dashboard">
+        <div v-if="loading">
+            Loading...
+        </div>
+        <div v-else>
+            <div v-for="(chart, index) in charts" :key="index">
+                <chart-component :data="chart.data" :options="chart.options"></chart-component>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import Chart from 'chart.js/auto'
+import { ref, onMounted } from 'vue'
+import ChartComponent from './Charts.vue'
+import DashboardService from '../services/DashboardService'
 
-export default defineComponent({
-    mounted() {
-        this.createChart();
+export default {
+    components: {
+        ChartComponent
     },
-    methods: {
-        createChart() {
-            const chartElement = this.$refs.chart;
-            const ctx = chartElement.getContext('2d');
+    setup() {
+        const loading = ref(true)
+        const charts = ref([])
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [
-                        {
-                            label: 'Sales',
-                            data: [12, 19, 3, 5, 2, 3],
-                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1,
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                },
-            });
-        },
-    },
-});
+        onMounted(async () => {
+            const response = await DashboardService.getChartData()
+            charts.value = response
+            loading.value = false
+        })
+
+        return {
+            loading,
+            charts
+        }
+    }
+}
 </script>
 
-<style scoped>
-.chart-container {
-    width: 400px;
-    height: 300px;
-    margin: 20px;
-}
-</style>

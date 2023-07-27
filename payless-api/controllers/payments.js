@@ -2,7 +2,10 @@ const paymentService = require('../services/payment');
 const {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 const loader = new TwingLoaderFilesystem('./views');
 const twing = new TwingEnvironment(loader);
-const {Operation, User} = require('../db');
+const {Operation, User} = require('../db/postgres');
+const userService = require('../services/user');
+const jwt = require("jsonwebtoken");
+const operationService = require("../services/operation");
 
 module.exports = function () {
     return {
@@ -10,12 +13,15 @@ module.exports = function () {
             try {
                 const data = req.body;
 
-                // TODO set UserID
-                data.UserId = (await User.findOne({where: {role: 'merchant'}})).id; // TODO TO REMOVE
+                if (!req.user?.id) {
+                    res.sendStatus(401);
+                }
+
+                data.UserId = req.user.id;
 
                 const payment = await paymentService.create(data);
 
-                res.status(200).json(paymentService.format(payment));
+                res.status(201).json(paymentService.format(payment));
             } catch (e) {
                 next(e);
             }
@@ -30,17 +36,25 @@ module.exports = function () {
                     res.sendStatus(404);
                 }
 
-                // TODO Check credentials
-                const user = await payment.getUser(); // TO REMOVE
-                // TODO Cors
+                if (!req.user?.id) {
+                    res.sendStatus(401);
+                }
+                const user = await userService.findById(req.user.id);
+
+                if (!user) {
+                    res.sendStatus(401);
+                }
 
                 if (payment.status !== 'pending') {
                     res.sendStatus(403);
                 }
 
                 twing.render('checkout.twig', {
+                    payment,
+                    token: jwt.sign({}, user.secret_token, {expiresIn: '1h'}), // temp token
+                    merchant_id: user.id,
                     cancel_url: `${process.env.APP_URL}/payments/${payment.uuid}/cancel`,
-                    canceled_url: user.cancel_url,
+                    cancelled_url: user.cancel_url,
                     validate_url: `${process.env.APP_URL}/payments/${payment.uuid}/validate`,
                     confirmation_url: user.confirmation_url,
                 }).then((output) => {
@@ -61,9 +75,6 @@ module.exports = function () {
                 if (!payment) {
                     res.sendStatus(404);
                 }
-
-                // TODO Check credentials
-                // TODO Cors
 
                 if (payment.status !== 'pending') {
                     res.sendStatus(403);
@@ -95,15 +106,30 @@ module.exports = function () {
                     res.sendStatus(403);
                 }
 
-                // TODO Check credentials
-                // TODO Cors
+                await paymentService.update({uuid: req.params.uuid}, {status: 'cancelled'});
 
-                const [paymentUpdated] = await paymentService.update({uuid: req.params.uuid}, {status: 'canceled'});
-
-                res.status(200).json(paymentService.format(paymentUpdated));
+                res.sendStatus(200);
             } catch (e) {
                 next(e);
             }
-        }
+        },
+        cget: async (req, res, next) => {
+            const {
+                _page = 1,
+                _itemsPerPage = 10,
+                _sort = {},
+                ...criteria
+            } = req.query;
+            try {
+                const data = await paymentService.findAll(criteria, {
+                    offset: (_page - 1) * _itemsPerPage,
+                    limit: _itemsPerPage,
+                    order: _sort,
+                });
+                res.json(data);
+            } catch (err) {
+                next(err);
+            }
+        },
     };
 };

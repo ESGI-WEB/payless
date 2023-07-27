@@ -15,6 +15,7 @@ async getAllMerchants(page = 1, limit = 10) {
         const result = await response.json();
         return result;
     },
+
     async getMerchantTransactions(merchantId) {
         const response = await fetch(`${API_BASE_URL}/users/${merchantId}/payment`);
 

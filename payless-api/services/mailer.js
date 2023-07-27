@@ -15,7 +15,7 @@ const sendRegistrationMail = async (to) => {
 
 const sendValidationMail = async (to) => {
     const subject = 'Your account has been validated!';
-    const htmlContent = await twing.render('account-validated.twig', {loginUrl: process.env.LOGIN_URL});
+    const htmlContent = await twing.render('account-validated.twig', {loginUrl: process.env.BACKOFFICE_URL + '/login'});
     return await sendEmail(to, subject, htmlContent);
 };
 

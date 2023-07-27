@@ -38,7 +38,6 @@ module.exports = function () {
                 }
 
                 setTimeout(() => {
-                    console.log('calling', url, fetchOptions)
                     fetch(url, fetchOptions)
                 }, 30 * 1000);
 

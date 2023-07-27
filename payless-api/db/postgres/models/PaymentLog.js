@@ -1,5 +1,5 @@
 const {Model, DataTypes} = require("sequelize");
-const constants = require("../../helpers/constants");
+const constants = require("../../../helpers/constants");
 module.exports = function (connection) {
     class PaymentLog extends Model {
 

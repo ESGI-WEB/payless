@@ -18,7 +18,6 @@ import Dashboard from '../components/Dashboard.vue';
 import MerchantList from '../components/MerchantList.vue';
 import authService from '../services/authService';
 import TransactionList from "../components/TransactionList.vue";
-import TransactionDetail from "../components/TransactionDetail.vue";
 import router from "../router";
 
 export default {

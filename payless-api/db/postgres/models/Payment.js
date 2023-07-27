@@ -1,5 +1,7 @@
 const {Model, DataTypes} = require("sequelize");
-const constants = require("../../helpers/constants");
+const constants = require("../../../helpers/constants");
+const { createPaymentDocument, updatePaymentDocument } = require("../../../hooks/hooks");
+
 module.exports = function (connection) {
     class Payment extends Model {
 
@@ -42,7 +44,7 @@ module.exports = function (connection) {
                 type: DataTypes.STRING,
             },
             status: {
-                type: DataTypes.ENUM(["succeeded", "processing", "pending", "canceled"]),
+                type: DataTypes.ENUM(["succeeded", "processing", "pending", "cancelled"]),
                 allowNull: false,
                 defaultValue: "pending",
             },
@@ -52,6 +54,9 @@ module.exports = function (connection) {
             tableName: "payment",
         }
     );
+
+    Payment.addHook("afterCreate", (payment) => createPaymentDocument(payment));
+    Payment.addHook("afterUpdate", (payment) => updatePaymentDocument(payment));
 
     return Payment;
 };

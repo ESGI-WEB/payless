@@ -1,5 +1,4 @@
-const sequelize = require('../db');
-const {count} = require("../services/user");
+const sequelize = require('../db/postgres');
 
 module.exports = function (Service) {
   return {

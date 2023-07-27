@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import merchantService from '../services/merchantService';
 import Paginate from 'vuejs-paginate-next';
 
@@ -54,28 +54,24 @@ export default {
     components: {
         paginate: Paginate,
     },
-    data(){
-        return {componentKey : 0,}
-    },
     setup() {
         const merchants = ref([]);
         const totalItems = ref(0);
         const currentPage = ref(1);
         const itemsPerPage = ref(10);
-        const componentKey = ref(0);
 
-        onMounted(async () => {
-            merchants.value = await merchantService.getAllMerchants();
-            let result = await merchantService.getAllMerchants();
+        const fetchMerchants = async () => {
+            let result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
             merchants.value = result.data;
             totalItems.value = result.totalItem;
-        });
+        };
+
+        onMounted(fetchMerchants);
+
         const validateMerchant = async (id) => {
             try {
                 await merchantService.validateMerchantRole(id);
-                const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
-                merchants.value = result.data;
-                totalItems.value = result.totalItem;
+                await nextTick(fetchMerchants);
             } catch (error) {
                 console.error('Error validation', error);
             }
@@ -84,10 +80,7 @@ export default {
         const refuseMerchant = async (id) => {
             try {
                 await merchantService.refuseMerchantRole(id);
-                const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
-                merchants.value = result.data;
-                totalItems.value = result.totalItem;
-                componentKey.value += 1;
+                await nextTick(fetchMerchants);
             } catch (error) {
                 console.error('Error validation refuse', error);
             }
@@ -99,15 +92,11 @@ export default {
 
         const changePage = async (newPageNumber) => {
             currentPage.value = newPageNumber;
-            const result = await merchantService.getAllMerchants(currentPage.value, itemsPerPage.value);
-            merchants.value = result.data;
-            totalItems.value = result.totalItem;
+            await nextTick(fetchMerchants);
         };
 
-        return { merchants, validateMerchant, refuseMerchant, pageCount, changePage, componentKey};
+        return { merchants, validateMerchant, refuseMerchant, pageCount, changePage};
     },
-
-
 };
 </script>
 

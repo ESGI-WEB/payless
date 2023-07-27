@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h2>Merchant Account</h2>
+    <div class="table-container">
+        <h2 class="merchant-table">Merchant Account</h2>
         <table>
             <thead>
             <tr>
@@ -40,6 +40,7 @@
             :prev-text="'Prev'"
             :next-text="'Next'"
             :container-class="'pagination'"
+            :active-class="'active-page'"
         />
     </div>
 </template>
@@ -111,16 +112,52 @@ export default {
 </script>
 
 <style scoped>
-.pagination {
+.table-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 1em;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+}
+
+.merchant-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.merchant-table th, .merchant-table td {
+    border: 1px solid #ddd;
+    padding: 0.5em 1em;
+    text-align: left;
+}
+
+.merchant-table thead {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+:deep(.merchant-table tbody tr:nth-child(even)) {
+    background-color: #f9f9f9;
+}
+
+:deep(.pagination) {
     display: flex;
     justify-content: center;
     list-style: none;
+    padding: 1em 0;
 }
+
 .pagination li {
     margin: 0 5px;
 }
+
 .pagination li a {
     text-decoration: none;
+    color: #333;
 }
+
+:deep(.active-page) {
+    color: red;
+}
+
 </style>
 

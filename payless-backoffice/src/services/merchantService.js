@@ -16,7 +16,7 @@ async getAllMerchants(page = 1, limit = 10) {
         return result;
     },
     async getMerchantTransactions(merchantId) {
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/payment`);
+        const response = await fetch(`${API_BASE_URL}/users/${merchantId}/payment`);
 
         if (!response.ok) {
             throw new Error('Error on data merchant');
@@ -25,16 +25,17 @@ async getAllMerchants(page = 1, limit = 10) {
         return await response.json();
     },
 
-    /* async getMerchantDetails(merchantId) {
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}`);
+     async getMerchantDetails(merchantId) {
+        const response = await fetch(`${API_BASE_URL}/users/${merchantId}`);
 
         if (!response.ok) {
-            throw new Error('Erreur sur la data du marchand');
+            throw new Error('Error on merchant');
         }
 
         return await response.json();
     },
 
+    /*
     async generateNewCredentials(merchantId) {
         const response = await fetch(`/api/merchants/${merchantId}/credentials`, {
             method: 'POST',

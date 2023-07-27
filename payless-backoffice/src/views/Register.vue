@@ -1,93 +1,99 @@
 <template>
     <div class="container">
         <form @submit.prevent="submitForm" class="form-container">
+            <div class="title">Registation form</div>
+            <div class="section">
+                <div>
+                    <div class="form-section">
+                        <h2>Information</h2>
+                        <div class="input-label">
+                            <label for="company_name">Company Name</label>
+                            <input type="text" id="company_name" v-model="formData.company_name" required>
+                            <p class="error" v-for="(error, index) in errors.company_name" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" v-model="formData.email" required>
+                            <p class="error" v-for="(error, index) in errors.email" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" v-model="formData.password" required>
+                            <p class="error" v-for="(error, index) in errors.password" :key="index">{{error}}</p>
+                        </div>
+                    </div>
 
-            <div class="form-section">
-                <h2>Information</h2>
-                <div>
-                    <label for="company_name">Company Name</label>
-                    <input type="text" id="company_name" v-model="formData.company_name" required>
-                    <p class="error" v-for="(error, index) in errors.company_name" :key="index">{{error}}</p>
+                    <div class="form-section">
+                        <h2>Place</h2>
+                        <div class="input-label">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" v-model="formData.address" required>
+                            <p class="error" v-for="(error, index) in errors.address" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="city">City</label>
+                            <input type="text" id="city" v-model="formData.city" required>
+                            <p class="error" v-for="(error, index) in errors.city" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="zip_code">Zip Code</label>
+                            <input type="text" id="zip_code" v-model="formData.zip_code" required>
+                            <p class="error" v-for="(error, index) in errors.zip_code" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" v-model="formData.country" required>
+                            <p class="error" v-for="(error, index) in errors.country" :key="index">{{error}}</p>
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    <label for="email">Email</label>
-                    <input type="email" id="email" v-model="formData.email" required>
-                    <p class="error" v-for="(error, index) in errors.email" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="password">Password</label>
-                    <input type="password" id="password" v-model="formData.password" required>
-                    <p class="error" v-for="(error, index) in errors.password" :key="index">{{error}}</p>
+                    <div class="form-section">
+                        <h2> Details </h2>
+                        <div class="input-label">
+                            <label for="confirmation_url">Redirect URL for confirmation </label>
+                            <input type="text" id="confirmation_url" v-model="formData.confirmation_url" required>
+                            <p class="error" v-for="(error, index) in errors.confirmation_url" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="cancel_url">Redirect URL for cancellation</label>
+                            <input type="text" id="cancel_url" v-model="formData.cancel_url" required>
+                            <p class="error" v-for="(error, index) in errors.cancel_url" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="merchant_url">Merchant URL</label>
+                            <input type="text" id="merchant_url" v-model="formData.merchant_url" required>
+                            <p class="error" v-for="(error, index) in errors.merchant_url" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="merchant_url">Webhook URL</label>
+                            <input type="text" id="merchant_url" v-model="formData.webhook_url" required>
+                            <p class="error" v-for="(error, index) in errors.webhook_url" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="currency">Currency URL</label>
+                            <select v-model="formData.currency">
+                                <option disabled value="">Currency</option>
+                                <option>EUR</option>
+                                <option>USD</option>
+                                <option>CHF</option>
+                                <option>GBP</option>
+                            </select>
+                            <p class="error" v-for="(error, index) in errors.currency" :key="index">{{error}}</p>
+                        </div>
+                        <div class="input-label">
+                            <label for="kbis">KBIS</label>
+                            <input type="file" id="kbis" @change="keepKbisFile">
+                            <p class="error" v-for="(error, index) in errors.kbis" :key="index">{{error}}</p>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <button type="submit">Register</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-section">
-                <h2>Place</h2>
-                <div>
-                    <label for="address">Address</label>
-                    <input type="text" id="address" v-model="formData.address" required>
-                    <p class="error" v-for="(error, index) in errors.address" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="city">City</label>
-                    <input type="text" id="city" v-model="formData.city" required>
-                    <p class="error" v-for="(error, index) in errors.city" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="zip_code">Zip Code</label>
-                    <input type="text" id="zip_code" v-model="formData.zip_code" required>
-                    <p class="error" v-for="(error, index) in errors.zip_code" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="country">Country</label>
-                    <input type="text" id="country" v-model="formData.country" required>
-                    <p class="error" v-for="(error, index) in errors.country" :key="index">{{error}}</p>
-                </div>
-            </div>
-            <div class="form-section">
-                <h2> Details </h2>
-                <div>
-                    <label for="confirmation_url">Redirect URL for confirmation </label>
-                    <input type="text" id="confirmation_url" v-model="formData.confirmation_url" required>
-                    <p class="error" v-for="(error, index) in errors.confirmation_url" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="cancel_url">Redirect URL for cancellation</label>
-                    <input type="text" id="cancel_url" v-model="formData.cancel_url" required>
-                    <p class="error" v-for="(error, index) in errors.cancel_url" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="merchant_url">Merchant URL</label>
-                    <input type="text" id="merchant_url" v-model="formData.merchant_url" required>
-                    <p class="error" v-for="(error, index) in errors.merchant_url" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="merchant_url">Webhook URL</label>
-                    <input type="text" id="merchant_url" v-model="formData.webhook_url" required>
-                    <p class="error" v-for="(error, index) in errors.webhook_url" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <select v-model="formData.currency">
-                        <option disabled value="">Currency</option>
-                        <option>EUR</option>
-                        <option>USD</option>
-                        <option>CHF</option>
-                        <option>GBP</option>
-                    </select>
-                    <p class="error" v-for="(error, index) in errors.currency" :key="index">{{error}}</p>
-                </div>
-                <div>
-                    <label for="kbis">KBIS</label>
-                    <input type="file" id="kbis" @change="keepKbisFile">
-                    <p class="error" v-for="(error, index) in errors.kbis" :key="index">{{error}}</p>
-                </div>
-            </div>
-            <div class="form-section">
-                <button type="submit">Register</button>
-                <div class="link-container">
-                    <router-link to="/login">Login</router-link>
-                </div>
-            </div>
+
         </form>
     </div>
 </template>
@@ -129,9 +135,9 @@ const submitForm = async () => {
         const response = await authService.register(formData.value);
 
         if (response.status === 201) {
-          await router.push("/login");
+            await router.push("/login");
         } else {
-          Object.assign(errors, await response.json());
+            Object.assign(errors, await response.json());
         }
     } catch (error) {
         console.error('Register error', error);
@@ -145,24 +151,29 @@ const submitForm = async () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #FDF7F2;
+    flex-direction: column;
+    flex: auto;
 }
 
 .form-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-width: 900px;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    border-radius: 5px;
+    border-radius: 20px;
+    margin: 20px;
+    background-color: white;
 }
 
 .form-section {
+    background-color: white;
     display: flex;
     flex-direction: column;
+    padding: 5px 20px;
+}
+
+.title {
+    font-family: Amaranth;
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 20px 0;
+    background-color: white;
 }
 
 h2 {
@@ -181,7 +192,9 @@ label {
     font-size: 0.9em;
 }
 
-input {
+input,
+select {
+    background-color: white;
     padding: 6px;
     margin-bottom: 10px;
     border: 1px solid #aaa;
@@ -197,10 +210,15 @@ button {
     transition: background-color 0.3s;
     border-radius: 3px;
     margin-top: 10px;
+    width: 100%;
 }
 
 button:hover {
     background-color: #C05640;
+}
+
+h2 {
+    margin-bottom: 10px;
 }
 
 .link-container {
@@ -209,8 +227,33 @@ button:hover {
 }
 
 .error {
-  color: red;
-  font-size: 0.8em;
-  margin: 0 0 10px 0;
+    color: red;
+    font-size: 0.8em;
+    margin: 0 0 10px 0;
+}
+
+.section {
+    display: flex;
+    flex-direction: row;
+    border-radius: 20px;
+    > div {
+        background-color: white;
+    }
+}
+
+.input-label {
+    display: flex;
+    flex-direction: column;
+}
+
+h2, label, input{
+    background-color: white;
+}
+
+@media screen and (max-width: 768px) {
+    .section {
+        flex-direction: column;
+    }
+
 }
 </style>

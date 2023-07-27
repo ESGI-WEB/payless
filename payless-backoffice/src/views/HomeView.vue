@@ -1,20 +1,4 @@
 <template>
-  <nav>
-    <div class="logo">
-      <img src="../assets/images/logo.png" />
-      <a class="icon"> PayLess. </a>
-    </div>
-    <div class="items-nav">
-      <a>Home</a>
-      <a>How it works</a>
-      <a>Features</a>
-      <a>Support</a>
-    </div>
-    <div class="account">
-      <a class="log-in">Log in</a>
-      <a class="register">Get Started</a>
-    </div>
-  </nav>
   <div class="center-section">
     <div class="text-section">
       <div class="promotion-text">Best way to manage online payment</div>
@@ -31,7 +15,7 @@
         <img src="../assets/images/arrow.png" />
       </div>
       <div class="register-button">
-        <button>Create account</button>
+        <button @click="router.push('/register')">Create account</button>
       </div>
     </div>
   </div>
@@ -52,7 +36,9 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import router from "@/router";
+</script>
 
 <style scoped>
 .card {
@@ -72,53 +58,6 @@
   > img {
     width: 200px;
   }
-}
-
-.logo {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  > img {
-    width: 30px;
-  }
-}
-nav {
-  padding: 15px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-.icon {
-  font-family: Amaranth;
-}
-
-.items-nav {
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  color: #4e4e4e;
-  justify-content: center;
-  flex: 1;
-}
-
-.log-in {
-  color: #4e4e4e;
-}
-
-.register {
-  color: white;
-  background-color: #f6ca88;
-  padding: 5px 15px;
-  border-radius: 20px;
-}
-
-.account {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 20px;
 }
 
 .footer {
@@ -170,6 +109,7 @@ nav {
 
 .register-button {
   > button {
+      cursor: pointer;
     border: 0;
     background-color: #eb6c4e;
     border-radius: 20px;

@@ -181,7 +181,10 @@ const findAll = async function (criteria = {}, options = {}) {
   }
 };
 
-const getAmountAndNumberOfTransactions = async function (currency, criteria = {}) {
+const getAmountAndNumberOfTransactions = async function (
+  currency,
+  criteria = {}
+) {
   let paymentCollection = null;
   try {
     paymentCollection = await connectToDatabase();
@@ -191,7 +194,6 @@ const getAmountAndNumberOfTransactions = async function (currency, criteria = {}
         $match: { currency, ...criteria },
       },
       {
-
         $group: {
           _id: null,
           number_of_transactions: {
@@ -227,27 +229,44 @@ const getAmountAndNumberOfTransactions = async function (currency, criteria = {}
   }
 };
 
-const getMerchant = async function (criteria = {}) {
+const getMerchant = async function (user) {
   let paymentCollection = null;
   try {
     paymentCollection = await connectToDatabase();
 
-    const cursor = await paymentCollection.aggregate([
-      {
-        $group: {
-          _id: null,
-          number_of_merchant: { $sum: 1 },
+    if (user.role = "merchant") {
+      const cursor = await paymentCollection.aggregate([
+        {
+          $group: {
+            _id: "$merchant.company_name",
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          number_of_merchant: 1,
+        {
+          $group: {
+            _id: null,
+            number_of_merchants: { $sum: 1 },
+          },
         },
-      },
-    ]);
-
-    return await cursor.toArray();
+      ]);
+      return await cursor.toArray();
+    } else if (user.role = "admin") {
+      const cursor = await paymentCollection.aggregate([
+        {
+          $group: {
+            _id: "$client_field.id",
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            number_of_customers: { $sum: 1 },
+          },
+        },
+      ]);
+      return await cursor.toArray();
+    } else {
+      return [];
+    }
   } catch (err) {
     console.error("Error while retrieving payment summary:", err);
   } finally {
@@ -323,5 +342,5 @@ module.exports = {
   findAll,
   getAmountAndNumberOfTransactions,
   getMerchant,
-  getChartData
+  getChartData,
 };

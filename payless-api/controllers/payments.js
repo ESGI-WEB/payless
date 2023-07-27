@@ -168,9 +168,9 @@ module.exports = function () {
       }
     },
     getMerchant: async (req, res, next) => {
-      const { ...criteria } = req.query;
+      const user = req.user
       try {
-        const data = await paymentService.getMerchant(criteria);
+        const data = await paymentService.getMerchant(user);
         res.json(data);
       } catch (err) {
         next(err);

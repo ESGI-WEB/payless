@@ -1,6 +1,5 @@
 const Payment = require("../db/mongo/models/Payment.js");
 const { connectToDatabase, closeDatabaseConnection } = require('../db/mongo/index');
-const {parse} = require("nodemon/lib/cli");
 
 async function createPaymentDocument(payment) {
     let paymentCollection = null;
@@ -44,9 +43,9 @@ async function updatePaymentDocument(payment) {
     try {
         paymentCollection = await connectToDatabase();
 
-        const { status, order_field } = payment;
+        const { status } = payment;
 
-        const paymentDocument = await paymentCollection.findOne({ payment_id: order_field });
+        const paymentDocument = await paymentCollection.findOne({ payment_id: payment.id.toString() });
 
         if (!paymentDocument) {
             console.log("Payment document not found");
@@ -54,7 +53,7 @@ async function updatePaymentDocument(payment) {
         }
 
         if (paymentDocument.status !== status) {
-            await paymentCollection.updateOne({ payment_id: order_field }, { $set: { status } });
+            await paymentCollection.updateOne({ payment_id: payment.id.toString() }, { $set: { status } });
             console.log("Payment document updated successfully");
         } else {
             console.log("Payment document status is the same. No update needed.");

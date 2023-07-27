@@ -152,8 +152,8 @@ nav {
 
 .promotion-text {
   font-family: Amaranth;
-  font-size: 2rem;
-  width: 300px;
+  font-size: 2.4rem;
+  width: 400px;
 }
 
 .description-text {
@@ -165,7 +165,7 @@ nav {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 100px;
+  gap: 160px;
 }
 
 .register-button {
@@ -179,7 +179,7 @@ nav {
 }
 
 .center-section {
-  gap: 100px;
+  gap: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;

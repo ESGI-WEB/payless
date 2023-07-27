@@ -8,7 +8,8 @@
             <option value="currency">Currency</option>
             <option value="status">Status</option>
         </select>
-        <input type="text" v-model="searchTerm" placeholder="Search Transactions..." @input="searchTransactions">
+        <input type="text" v-model="searchTerm" placeholder="Search Transactions...">
+        <button @click="searchTransactions">🔍</button>
         <table>
             <thead>
             <tr>

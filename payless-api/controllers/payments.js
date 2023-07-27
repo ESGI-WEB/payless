@@ -107,6 +107,7 @@ module.exports = function () {
 
                 await paymentService.update({uuid: req.params.uuid}, {status: 'cancelled'});
 
+                await payment.notify('cancelled');
                 res.sendStatus(200);
             } catch (e) {
                 next(e);

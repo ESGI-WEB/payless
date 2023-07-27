@@ -18,7 +18,6 @@ module.exports = (roles = null, verifyUsingUserSecret = false, checkReferer = fa
                 jwtData = jwt.verify(token, process.env.JWT_SECRET);
                 user = await userService.findById(jwtData.id);
                 if (!user) return res.sendStatus(401);
-
                 if (user.role !== jwtData.role) return res.sendStatus(401); // role has changed since the token was created
             } else {
                 const merchant_id = req.headers.merchant_id;

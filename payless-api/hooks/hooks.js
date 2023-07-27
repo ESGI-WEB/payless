@@ -2,16 +2,19 @@ const Payment = require("../db/mongo/models/Payment.js");
 const { connectToDatabase, closeDatabaseConnection } = require('../db/mongo/index');
 
 async function createPaymentDocument(payment) {
+    let paymentCollection = null;
+
     try {
         const user = await payment.getUser();
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const paymentData = new Payment({
+
             payment_id: payment.id,
             merchant: {
                 company_name: user.company_name,
                 role: user.role,
-                id: user.uuid,
+                id: user.id,
                 email: user.email
             },
             order_field: {
@@ -31,17 +34,19 @@ async function createPaymentDocument(payment) {
     } catch (error) {
         console.error("Error creating payment document:", error);
     } finally {
-        //await closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
 async function updatePaymentDocument(payment) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
-        const { status, order_field } = payment;
+        const { status } = payment;
 
-        const paymentDocument = await paymentCollection.findOne({ payment_id: order_field });
+        const paymentDocument = await paymentCollection.findOne({ payment_id: payment.id.toString() });
 
         if (!paymentDocument) {
             console.log("Payment document not found");
@@ -49,7 +54,7 @@ async function updatePaymentDocument(payment) {
         }
 
         if (paymentDocument.status !== status) {
-            await paymentCollection.updateOne({ payment_id: order_field }, { $set: { status } });
+            await paymentCollection.updateOne({ payment_id: payment.id.toString() }, { $set: { status } });
             console.log("Payment document updated successfully");
         } else {
             console.log("Payment document status is the same. No update needed.");
@@ -57,13 +62,15 @@ async function updatePaymentDocument(payment) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        //await closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
 async function createOperationOnPaymentDocument(operation) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const operationData = {
             id: operation.id.toString(),
@@ -81,13 +88,15 @@ async function createOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {
-        // await closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 
 async function updateOperationOnPaymentDocument(operation) {
+    let paymentCollection = null;
+
     try {
-        const paymentCollection = await connectToDatabase();
+        paymentCollection = await connectToDatabase();
 
         const paymentDocument = await paymentCollection.findOne({ payment_id: operation.PaymentId.toString() });
 
@@ -96,7 +105,9 @@ async function updateOperationOnPaymentDocument(operation) {
             return;
         }
 
-        const operationToUpdate = paymentDocument.operations.find(op => op.id === operation.id);
+        const operationToUpdate = paymentDocument.operations.find(op => {
+            return parseInt(op.id) === operation.id
+        });
 
         if (!operationToUpdate) {
             console.error("Operation not found for OperationId:", operation.id);
@@ -116,7 +127,7 @@ async function updateOperationOnPaymentDocument(operation) {
     } catch (error) {
         console.error("Error updating operations:", error);
     } finally {
-        //await closeDatabaseConnection();
+        await closeDatabaseConnection();
     }
 }
 

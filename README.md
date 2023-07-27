@@ -41,6 +41,12 @@ Il suffit de lancer la commande suivant pour lancer les migrations :
 docker exec payless-api-1 node migrate.js
 ````
 
+Pour avoir des données de tests, lancer
+````bash
+docker exec payless-api-1 node seed.js
+````
+(tip, le user 1 a toujours le role merchant avec les mêmes client_token et secret, ca permet de pas avoir a changer votre env de dev du site marchant à chaque migrate)
+
 # Tests
 Pour lancer les tests, il suffit de lancer la commande suivante :
 ```bash

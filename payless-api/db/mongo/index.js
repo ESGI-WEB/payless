@@ -33,6 +33,8 @@ async function closeDatabaseConnection() {
         try {
             await client.close();
             console.log('MongoDB connection closed.');
+            client = null;
+            paymentCollection = null;
         } catch (error) {
             console.error('Error closing MongoDB connection:', error);
             throw error;

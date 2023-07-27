@@ -94,21 +94,33 @@ module.exports = function (connection) {
                 type: DataTypes.STRING,
                 // allowNull: false,
                 validate: {
-                    isUrl: true,
+                    is: function (value) {
+                        if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
+                            throw new Error("User.merchant_url is not valid");
+                        }
+                    },
                 }
             },
             confirmation_url: {
                 type: DataTypes.STRING,
                 // allowNull: false,
                 validate: {
-                    isUrl: true,
+                    is: function (value) {
+                        if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
+                            throw new Error("User.confirmation_url is not valid");
+                        }
+                    },
                 }
             },
             cancel_url: {
                 type: DataTypes.STRING,
                 // allowNull: false,
                 validate: {
-                    isUrl: true,
+                    is: function (value) {
+                        if(!value.match(/^(http|https):\/\/(www\.)?[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,})?(:\d+)?(\/[\w\/.-]*)*$/gm)) {
+                            throw new Error("User.confirmation_url is not valid");
+                        }
+                    },
                 }
             },
             currency: {

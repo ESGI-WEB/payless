@@ -333,7 +333,7 @@ const getChartData = async function (criteria = {}, user) {
 
       return await cursor.toArray();
 
-    } else if (user.role === "admini") {
+    } else if (user.role === "admin") {
       const matchCriteria = {};
       if (criteria.startDate && criteria.endDate) {
         matchCriteria.created_date = {

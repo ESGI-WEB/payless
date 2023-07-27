@@ -12,9 +12,9 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker exec payless_api_1 node migrate.js
 
 # launch nginx for frontend
-docker build -t nicolaswadoux/payless-backoffice ./payless-backoffice &&
-docker stop payless-backoffice-prod &&
-docker rm payless-backoffice-prod &&
+docker build -t nicolaswadoux/payless-backoffice ./payless-backoffice
+docker stop payless-backoffice-prod
+docker rm payless-backoffice-prod
 docker run --name payless-backoffice-prod -d -p 80:80 nicolaswadoux/payless-backoffice
 
 

@@ -11,30 +11,19 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import ChartComponent from './Charts.vue'
 import DashboardService from '../services/DashboardService'
 
-export default {
-    components: {
-        ChartComponent
-    },
-    setup() {
-        const loading = ref(true)
-        const charts = ref([])
+const loading = ref(true)
+const charts = ref([])
 
-        onMounted(async () => {
-            const response = await DashboardService.getChartData()
-            charts.value = response
-            loading.value = false
-        })
+onMounted(async () => {
+    const response = await DashboardService.getChartData()
+    charts.value = response
+    loading.value = false
+})
 
-        return {
-            loading,
-            charts
-        }
-    }
-}
 </script>
 

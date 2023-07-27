@@ -16,6 +16,27 @@ const seed = async () => {
         const currencies = constants.CURRENCIES;
         const userRoles = ['merchant', 'merchant-to-validate', 'refused'];
 
+        const userUsedForMerchantDev = await User.create({
+            company_name: faker.company.name(),
+            zip_code: faker.location.zipCode(),
+            city: faker.location.city(),
+            address: faker.location.streetAddress(),
+            country: faker.location.country(),
+            merchant_url: process.env.TEST_MERCHANT_URL,
+            confirmation_url: process.env.TEST_MERCHANT_URL + '/order/confirmed',
+            cancel_url: process.env.TEST_MERCHANT_URL + '/order/cancelled',
+            currency: currencies[Math.floor(Math.random() * currencies.length)],
+            email: 'test@test.test',
+            password: 'Azerty1*',
+            kbis: 'test.pdf',
+            role: 'merchant',
+        });
+
+        await userUsedForMerchantDev.update({
+            secret_token: '3tCuWEVR7RyptMBBbBNn2gc7gAv12gGxuaIgF0PtgP3p823KG7',
+            client_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTA0NTk2MTJ9.DjBsIAe5SpW8-6MRiXUNew-DUhQnf06AXj06jL1m1kI'
+        });
+
         while (i < 20) {
             users.push({
                 company_name: faker.company.name(),
@@ -44,7 +65,6 @@ const seed = async () => {
         for (const user of users) {
             await User.create(user);
         }
-
     } catch (error) {
         console.error(error);
         process.exit(1);

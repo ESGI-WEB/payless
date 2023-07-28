@@ -23,6 +23,7 @@
 import {inject, ref} from 'vue';
 import {loginKey} from "@/services/authKeys";
 import router from "@/router";
+import VueJwtDecode from "vue-jwt-decode";
 
 const formData = ref({
     email: '',
@@ -34,7 +35,18 @@ const login = inject(loginKey);
 const submitForm = async () => {
     try {
         await login(formData.value)
-        await router.push('/dashboard')
+        const token = localStorage.getItem('authToken')
+        if(token) {
+            const decodedToken = VueJwtDecode.decode(token);
+            if (decodedToken.role === 'admin') {
+                router.push('/dashboard')
+            } else if (decodedToken.role === 'merchant') {
+                router.push('/merchant')
+            } else {
+                router.push('/waiting-page')
+            }
+        }
+
     } catch (error) {
         console.error('Error with the connection', error);
     }

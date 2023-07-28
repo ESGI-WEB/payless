@@ -13,8 +13,8 @@
 
 <script setup>
 import MerchantTransactionList from "../components/MerchantTransactionList.vue";
-import authService from '../services/authService';
-import router from "../router";
+import {inject} from "vue";
+import {logoutKey} from "@/services/authKeys";
 import MerchantCard from "../components/MerchantCard.vue";
 import {onMounted, reactive} from "vue";
 import merchantService from "../services/merchantService";
@@ -32,14 +32,7 @@ onMounted(async () => {
   }
 });
 
-const logout = async () => {
-    try {
-        await authService.logout();
-        await router.push("/login");
-    } catch (error) {
-        console.error('Logout Error :', error);
-    }
-};
+const logout = inject(logoutKey)
 
 </script>
 

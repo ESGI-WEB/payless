@@ -1,21 +1,19 @@
 <template>
     <div class="transaction-card" v-if="dataLoaded">
-        <h3>Payment</h3>
-
-        <div>
-            <h4>Amount: {{ transactionData.total_amount }}</h4>
-            <h4>Number of transactions: {{ transactionData.number_of_transactions }}</h4>
-        </div>
-
-        <div>
-            <h4>Currency: {{ transactionData.currency }}</h4>
+        <div class="transaction-item">
+            <div class="small-title">Transactions</div>
+            <div class="transaction-amount">
+                <div class="amount-total">{{ transactionData.total_amount }} {{ transactionData.currency }}</div>
+                <div>out of {{ transactionData.number_of_transactions }}</div>
+            </div>
         </div>
 
         <div>
             <h4>Date: {{ chartData.date }}</h4>
         </div>
         <div>
-            <h4>Number of merchant: {{ merchantData.number_of_merchants }}</h4>
+            <div>Merchants</div>
+            <div>{{ merchantData.number_of_merchants }}</div>
         </div>
     </div>
 </template>
@@ -66,6 +64,27 @@ onMounted(async () => {
     color: #333;
     margin-bottom: 1rem;
     text-align: justify;
+}
+
+.transaction-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.transaction-amount {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.small-title {
+    color: #4E4E4E;
+}
+
+.amount-total {
+    font-family: Amaranth;
+    font-size: 2rem;
 }
 </style>
 

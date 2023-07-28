@@ -130,7 +130,7 @@ module.exports = function () {
     },
     refund: async function (req, res, next) {
       try {
-        const payment = await paymentService.findOneBy({uuid: req.params.uuid});
+        const payment = await paymentService.findOneBy({id: req.params.id});
 
         if (!payment) {
           res.sendStatus(404);
@@ -140,7 +140,7 @@ module.exports = function () {
           res.sendStatus(403);
         }
 
-        await paymentService.refund(payment.uuid, req.body);
+        await paymentService.refund(payment.id, req.body);
 
         res.sendStatus(200);
       } catch (e) {
@@ -155,7 +155,11 @@ module.exports = function () {
         ...criteria
       } = req.query;
       try {
-        const data = await paymentService.findAll(criteria, {
+        let criteriaSecured = criteria
+        if (req.user.role !== "admin") {
+          criteriaSecured = {...criteria, merchant: {...criteria.merchant ?? {}, id: req.user.id}};
+        }
+        const data = await paymentService.findAll(criteriaSecured, {
           offset: (_page - 1) * _itemsPerPage,
           limit: _itemsPerPage,
           order: _sort,

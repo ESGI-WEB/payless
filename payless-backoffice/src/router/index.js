@@ -1,81 +1,85 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from "../views/Login.vue";
-import Register from "../views/Register.vue";
-import AdminView from "../views/AdminView.vue";
-import MerchantView from "../views/MerchantView.vue";
-import authService from "../services/authService";
+
 import Dashboard from "../components/Dashboard.vue";
 import MerchantList from "../components/MerchantList.vue";
 import TransactionList from "../components/TransactionList.vue";
-import WaitingView from "../views/WaitingView.vue";
-import HomeView from "@/views/HomeView.vue";
+import VueJwtDecode from "vue-jwt-decode"
+import LoginView from "../views/LoginView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import HomeView from "../views/HomeView.vue";
+
+const routes = [
+  {
+    path: '/login',
+    component: LoginView,
+    name: 'Login',
+  },
+  {
+    path: '/register',
+    component: RegisterView,
+    name: 'Register',
+  },
+  {
+    path: '/',
+    component: HomeView,
+    name: 'HomeView',
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if(token) {
+        const decodedToken = VueJwtDecode.decode(token);
+        if (decodedToken !== null) {
+          next('/dashboard');
+        }
+      }
+      else {
+        next();
+      }
+    },
+  },
+  {
+    path: '/transaction',
+    component: TransactionList,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        if (decodedToken !== null) {
+          next('/');
+        }
+      } else {
+        next()
+      }
+    }
+  },
+  {
+    path: '/dashboard',
+    component: Dashboard,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        next('/');
+      } else {
+        next()
+      }
+    }
+  },
+  {
+    path: '/merchantlist',
+    name: 'MerchantList',
+    component: MerchantList,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        next('/');
+      } else {
+        next()
+      }
+    }
+  }
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register,
-    },
-    {
-      path: '/admin',
-      name: 'Admin',
-      component: AdminView,
-    },
-    {
-      path: '/merchant',
-      name: 'Merchant',
-      component: MerchantView,
-    },
-    {
-      path: '/waiting',
-      name: 'Waiting',
-      component: WaitingView,
-    },
-    {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard,
-      meta: { showNavbar: true, requiresAuth : true},
-    },
-    {
-      path: '/merchantlist',
-      name: 'MerchantList',
-      component: MerchantList,
-      meta: { showNavbar: true, requiresAuth : true},
-    },
-    {
-      path: '/transaction',
-      name: 'Transaction',
-      component: TransactionList,
-      meta: { showNavbar: true, requiresAuth : true},
-    },
-  ]
-})
-
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth) && !authService.isLoggedIn()) {
-    next('/login');
-  } else if (to.path === '/admin' && !authService.isAdmin()) {
-    next('/login');
-  } else if (to.path === '/merchant' && !authService.isMerchant()) {
-    next('/login');
-  } else {
-    next();
-  }
+  history: createWebHistory(),
+  routes
 });
 
-
-
-export default router
+export default router;

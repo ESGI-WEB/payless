@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 export default {
 
     async getAllTransactions(page = 1, limit = 10) {
-        const response = await fetch(`${API_BASE_URL}/payments?_page=${page}&_itemsPerPage=${limit}`, {
+        const response = await fetch(`${API_BASE_URL}/payments?_page=${page}&_itemsPerPage=${limit}&_sort[_id]=1`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             },
@@ -58,22 +58,28 @@ export default {
 
         const result = await response.json();
         return result;
-    },
+    },*/
 
 
-    async refundTransaction(transactionId, amount) {
-        const response = await fetch(`/${API_BASE_URL}/payment/${transactionId}/refund`, {
-            method: 'GET',
+    async refund(transactionId, amount) {
+        const response = await fetch(`${API_BASE_URL}/payments/${transactionId}/refund`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             },
-            body: JSON.stringify({ amount }),
+            body: JSON.stringify({
+                amount,
+            }),
         });
 
-        if (!response.ok) {
-            throw new Error('Refund error');
+        if (response.status !== 200) {
+            if (response.status === 422) {
+                return await response.json()
+            }
+            throw new Error('Error for refund');
         }
 
-        return await response.json();
-    },*/
+        return true;
+    },
 };

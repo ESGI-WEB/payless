@@ -15,8 +15,9 @@ module.exports = function () {
 
                 const payment = await operation.getPayment();
 
+                await paymentService.update({id: operation.PaymentId}, {status: 'succeeded'});
+
                 if (operation.type === 'capture') {
-                    await paymentService.update({id: operation.PaymentId}, {status: 'succeeded'});
                     await payment.notify('succeeded');
                 }
 

@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 export default {
 
 async getAllMerchants(page = 1, limit = 10) {
-        const response = await fetch(`${API_BASE_URL}/users?_page=${page}&_itemsPerPage=${limit}`, {
+        const response = await fetch(`${API_BASE_URL}/users?_page=${page}&_itemsPerPage=${limit}&_sort[id]=DESC`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             },
@@ -58,11 +58,11 @@ async getAllMerchants(page = 1, limit = 10) {
             },
         });
 
-        if (!response.ok) {
+        if (response.status !== 200) {
             throw new Error('Error in validation');
         }
 
-        return await response.json();
+        return true;
     },
     async refuseMerchantRole(merchantId) {
     const response = await fetch(`${API_BASE_URL}/users/${merchantId}/refuse`, {
@@ -77,6 +77,6 @@ async getAllMerchants(page = 1, limit = 10) {
         throw new Error('Error in validation refuse');
     }
 
-    return await response.json();
+    return true;
     },
 };

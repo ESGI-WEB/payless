@@ -1,39 +1,33 @@
 <template>
     <div class="table-container">
         <h2 class="merchant-table">Merchant Account</h2>
-        <table>
-            <thead>
+        <TableList>
+          <template #head>
             <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>Company name</th>
-                <th>Role</th>
-                <th>Action</th>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Company name</th>
+              <th>Role</th>
+              <th>Action</th>
             </tr>
-            </thead>
-            <tbody>
+          </template>
+          <template #body>
             <template v-for="merchant in merchants">
-                <tr v-if="merchant.role !== 'admin'" :key="merchant.id">
-                    <td>{{ merchant.id }}</td>
-                    <td>{{ merchant.email }}</td>
-                    <td>{{ merchant.company_name }}</td>
-                    <td>{{ merchant.role }}</td>
-                    <td>
-                        <button v-if="merchant.role === 'merchant-to-validate'" @click="validateMerchant(merchant.id)">
-                            Validate Role
-                        </button>
-                        <button v-if="merchant.role === 'merchant-to-validate'" @click="refuseMerchant(merchant.id)">
-                            Refuse role
-                        </button>
-                    </td>
-                    <td>
-                        <span v-if="merchant.role === 'merchant'">Validate</span>
-                        <span v-if="merchant.role === 'refused'">Refuse</span>
-                    </td>
-                </tr>
+              <tr v-if="merchant.role !== 'admin'" :key="merchant.id">
+                <td>{{ merchant.id }}</td>
+                <td>{{ merchant.email }}</td>
+                <td>{{ merchant.company_name }}</td>
+                <td>{{ merchant.role }}</td>
+                <td class="actions-container">
+                  <template v-if="merchant.role === 'merchant-to-validate'">
+                    <CustomButton title="✓" :onClick="() => validateMerchant(merchant.id)"></CustomButton>
+                    <CustomButton title="✖" :onClick="() => refuseMerchant(merchant.id)"></CustomButton>
+                  </template>
+                </td>
+              </tr>
             </template>
-            </tbody>
-        </table>
+          </template>
+        </TableList>
         <paginate
             :page-count="pageCount"
             :click-handler="changePage"
@@ -49,6 +43,8 @@
 import { ref, onMounted, computed, nextTick } from 'vue';
 import merchantService from '../services/merchantService';
 import Paginate from 'vuejs-paginate-next';
+import TableList from "./TableList.vue";
+import CustomButton from "./CustomButton.vue";
 
 const merchants = ref([]);
 const totalItems = ref(0);
@@ -66,16 +62,17 @@ onMounted(fetchMerchants);
 const validateMerchant = async (id) => {
     try {
         await merchantService.validateMerchantRole(id);
-        await nextTick(fetchMerchants);
+        await fetchMerchants();
     } catch (error) {
         console.error('Error validation', error);
+      console.log(error)
     }
 };
 
 const refuseMerchant = async (id) => {
     try {
         await merchantService.refuseMerchantRole(id);
-        await nextTick(fetchMerchants);
+        await fetchMerchants();
     } catch (error) {
         console.error('Error validation refuse', error);
     }
@@ -92,50 +89,27 @@ const changePage = async (newPageNumber) => {
 </script>
 
 <style scoped>
-.table-container {
-    width: 100%;
-    margin: 0 auto;
-    padding: 1em;
-    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
-}
+  :deep(.pagination) {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      list-style: none;
+      padding: 1em 0;
+  }
 
-.merchant-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+  .pagination li {
+      margin: 0 5px;
+  }
 
-.merchant-table th, .merchant-table td {
-    border: 1px solid #ddd;
-    padding: 0.5em 1em;
-    text-align: left;
-}
+  .pagination li a {
+      text-decoration: none;
+      color: #333;
+  }
 
-.merchant-table thead {
-    background-color: #f5f5f5;
-    font-weight: bold;
-}
-
-:deep(.merchant-table tbody tr:nth-child(even)) {
-    background-color: #f9f9f9;
-}
-
-:deep(.pagination) {
-    display: flex;
-    justify-content: center;
-    list-style: none;
-    padding: 1em 0;
-}
-
-.pagination li {
+  :deep(.active-page) {
+      border-bottom: solid 2px;
+  }
+  .actions-container *{
     margin: 0 5px;
-}
-
-.pagination li a {
-    text-decoration: none;
-    color: #333;
-}
-
-:deep(.active-page) {
-    color: red;
-}
+  }
 </style>

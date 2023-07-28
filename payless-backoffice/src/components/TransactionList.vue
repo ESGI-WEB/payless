@@ -10,32 +10,36 @@
         </select>
         <input type="text" v-model="searchTerm" placeholder="Search Transactions...">
         <button @click="searchTransactions">🔍</button>
-        <table>
-            <thead>
-            <tr>
-                <th>Transaction ID</th>
-                <th>Merchant</th>
-                <th>Total</th>
-                <th>Currency</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="transaction in transactions" :key="transaction._id">
-                <td>{{ transaction.payment_id }}</td>
-                <td>{{ transaction.merchant.company_name }}</td>
-                <td>{{ transaction.total }}</td>
-                <td>{{ transaction.currency }}</td>
-                <td>{{ transaction.status }}</td>
-            </tr>
-            </tbody>
-        </table>
+
+        <div class="table">
+          <TableList>
+              <template #head>
+                  <tr>
+                      <th>Transaction ID</th>
+                      <th>Merchant</th>
+                      <th>Total</th>
+                      <th>Currency</th>
+                      <th>Status</th>
+                  </tr>
+              </template>
+              <template #body>
+                  <tr v-for="transaction in transactions" :key="transaction._id">
+                      <td>{{ transaction.payment_id }}</td>
+                      <td>{{ transaction.merchant.company_name }}</td>
+                      <td>{{ transaction.total }}</td>
+                      <td>{{ transaction.currency }}</td>
+                      <td>{{ transaction.status }}</td>
+                  </tr>
+              </template>
+          </TableList>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import transactionService from '../services/transactionService';
+import TableList from "./TableList.vue";
 
 const transactions = ref([]);
 const searchTerm = ref('');
@@ -59,3 +63,9 @@ const searchTransactions = async () => {
     }
 };
 </script>
+
+<style scoped>
+ .table {
+     margin: 20px;
+ }
+</style>

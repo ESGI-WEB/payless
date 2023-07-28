@@ -15,7 +15,7 @@
         <img src="../assets/images/arrow.png" />
       </div>
       <div class="register-button">
-        <button @click="router.push('/register')">Create account</button>
+        <button @click="router.push({ name: 'Register' })">Create account</button>
       </div>
     </div>
   </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import router from "@/router";
+import router from '../router'
 </script>
 
 <style scoped>
@@ -109,7 +109,7 @@ import router from "@/router";
 
 .register-button {
   > button {
-      cursor: pointer;
+    cursor: pointer;
     border: 0;
     background-color: #eb6c4e;
     border-radius: 20px;
@@ -124,7 +124,7 @@ import router from "@/router";
   flex-direction: column;
   justify-content: center;
   align-items: center;
-    background-color: #FDF7F2;
-    height: calc(100vh - 60px);
+  background-color: #fdf7f2;
+  height: calc(100vh - 60px);
 }
 </style>

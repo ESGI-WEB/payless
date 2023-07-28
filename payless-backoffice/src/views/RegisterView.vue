@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <form @submit.prevent="submitForm" class="form-container">
-            <div class="title">Registation form</div>
+            <div class="title">Registration form</div>
             <div class="section">
                 <div>
                     <div class="form-section">
@@ -66,8 +66,8 @@
                             <p class="error" v-for="(error, index) in errors.merchant_url" :key="index">{{error}}</p>
                         </div>
                         <div class="input-label">
-                            <label for="merchant_url">Webhook URL</label>
-                            <input type="text" id="merchant_url" v-model="formData.webhook_url" required>
+                            <label for="webhook_url">Webhook URL</label>
+                            <input type="text" id="webhook_url" v-model="formData.webhook_url" required>
                             <p class="error" v-for="(error, index) in errors.webhook_url" :key="index">{{error}}</p>
                         </div>
                         <div class="input-label">
@@ -101,9 +101,9 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue';
+import {inject, reactive, ref} from 'vue';
 import {useRouter} from "vue-router";
-import authService from '../services/authService';
+import {loginKey, registerKey} from "@/services/authKeys";
 
 const router = useRouter();
 const formData = ref({
@@ -128,19 +128,20 @@ const keepKbisFile = (event) => {
     formData.value.kbis = event.target.files[0];
 };
 
+const register = inject(registerKey);
+
 const submitForm = async () => {
     try {
         for(const key in errors) {
             errors[key] = [];
         }
+        register(formData.value)
 
-        const response = await authService.register(formData.value);
-
-        if (response.status === 201) {
+       /* if (response.status === 201) {
             await router.push("/login");
         } else {
             Object.assign(errors, await response.json());
-        }
+        }*/
     } catch (error) {
         console.error('Register error', error);
     }

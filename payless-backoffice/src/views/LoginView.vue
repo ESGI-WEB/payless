@@ -20,27 +20,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from "vue-router";
-import authService from '../services/authService';
-
-const router = useRouter();
+import {inject, ref} from 'vue';
+import {loginKey} from "@/services/authKeys";
+import router from "@/router";
 
 const formData = ref({
     email: '',
     password: '',
 });
 
+const login = inject(loginKey);
+
 const submitForm = async () => {
     try {
-        await authService.login(formData.value.email, formData.value.password);
-        if(authService.isAdmin()){
-            return router.push("/admin");
-        } else if(authService.isMerchant()){
-            return router.push("/merchant");
-        } else{
-            return router.push("/waiting")
-        }
+        await login(formData.value)
+        await router.push('/dashboard')
     } catch (error) {
         console.error('Error with the connection', error);
     }

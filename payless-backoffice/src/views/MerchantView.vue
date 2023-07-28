@@ -2,17 +2,14 @@
     <div>
         <h1>Merchant</h1>
 
+        <MerchantTransactionList/>
+
         <button @click="logout">Logout</button>
 
-        <MerchantDashboard/>
-        <MerchantSpace/>
-        <MerchantTransactionList/>
     </div>
 </template>
 
 <script setup>
-import MerchantDashboard from "../components/MerchantDashboard.vue";
-import MerchantSpace from "../components/MerchantSpace.vue";
 import MerchantTransactionList from "../components/MerchantTransactionList.vue";
 import authService from '../services/authService';
 import router from "../router";

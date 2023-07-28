@@ -32,14 +32,18 @@ export default {
                 'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
             };
             const urlParams = new URLSearchParams(filterParams);
-            const chartData = await fetch(`${VITE_BASE_URL}/payments/get-chart-data?${urlParams}`, {headers}).then(res => res.json())
+            const response = await fetch(`${VITE_BASE_URL}/payments/get-chart-data?${urlParams}`, {headers}).then(res => res.json())
+
+            // Convert the object to an array
+            const chartData = Object.values(response);
 
             return {
-                chartData: chartData[0],
+                chartData: chartData,
             }
         } catch (error) {
             console.error('Error fetching data:', error);
             throw error;
         }
     }
+
 }

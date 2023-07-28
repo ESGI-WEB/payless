@@ -28,18 +28,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import merchantService from '../services/merchantService';
 import TableList from "./TableList.vue";
 
-const route = useRoute();
-const merchantId = ref(null);
 const transactions = ref([]);
 
 onMounted(async () => {
     try {
-        merchantId.value = route.params.id;
-        transactions.value = await merchantService.getMerchantTransactions(merchantId.value);
+        transactions.value = await merchantService.getMerchantTransactions();
     } catch (error) {
         console.error('Error payment merchant', error);
     }

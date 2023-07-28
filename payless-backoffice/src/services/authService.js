@@ -37,6 +37,7 @@ const authService = reactive({
             }
         });
 
+        console.log(data);
         return await fetch(`${API_BASE_URL}/register`, {
             method: 'POST',
             body: data,

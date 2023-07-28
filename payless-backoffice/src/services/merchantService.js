@@ -16,8 +16,12 @@ async getAllMerchants(page = 1, limit = 10) {
         return result;
     },
 
-    async getMerchantTransactions(merchantId) {
-        const response = await fetch(`${API_BASE_URL}/payments?${merchantId}`);
+    async getMerchantTransactions() {
+        const response = await fetch(`${API_BASE_URL}/payments`,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            },
+        });
 
         if (!response.ok) {
             throw new Error('Error on data merchant');

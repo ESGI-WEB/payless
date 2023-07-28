@@ -41,6 +41,12 @@ const routes = [
   {
     path: '/dashboard',
     component: Dashboard,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if(!token) {
+        next('/');
+      }
+    },
   }
 ];
 

@@ -159,6 +159,7 @@ const findAll = async function (criteria = {}, options = {}) {
     let query = paymentCollection.find(criteria);
 
     if (options.order !== {}) {
+      console.log(options.order)
       query = query.sort(options.order);
     }
 
@@ -392,14 +393,14 @@ const format = function (payments) {
   return payments.map((payment) => payment.format());
 };
 
-const refund = async function (uuid, data) {
+const refund = async function (id, data) {
   const transaction = await connection.transaction();
   try {
     const {
       amount = null
     } = data;
 
-    const payment = await findOneBy({uuid});
+    const payment = await findOneBy({id});
     const operations = await payment.getOperations();
     const refundedAmount = operations.reduce((acc, operation) => {
       if (operation.type === "refund" && operation.status !== "cancelled") {
@@ -408,6 +409,9 @@ const refund = async function (uuid, data) {
       return acc;
     }, 0);
 
+    if (!amount || amount <= 0) {
+        throw new ValidationError({amount: ["Amount is required"]});
+    }
     if (amount > payment.total - refundedAmount) {
       throw new ValidationError({amount: ["Amount is bigger than total amount"]});
     }
@@ -441,6 +445,8 @@ const refund = async function (uuid, data) {
             `/operations/${newRefund.uuid}/mark-as-done`,
       }),
     });
+
+    payment.update({ status: "processing" });
 
     if (pspQuery.status != 202) {
       if (pspQuery.status == 422) {

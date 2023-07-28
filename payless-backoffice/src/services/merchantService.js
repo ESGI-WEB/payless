@@ -59,6 +59,9 @@ async getAllMerchants(page = 1, limit = 10) {
         });
 
         if (response.status !== 200) {
+            if (response.status === 422) {
+                return await response.json()
+            }
             throw new Error('Error in validation');
         }
 

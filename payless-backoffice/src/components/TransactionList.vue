@@ -18,8 +18,10 @@
                       <th>Transaction ID</th>
                       <th>Merchant</th>
                       <th>Total</th>
+                      <th>Refund</th>
                       <th>Currency</th>
                       <th>Status</th>
+                      <th>Action</th>
                   </tr>
               </template>
               <template #body>
@@ -27,8 +29,22 @@
                       <td>{{ transaction.payment_id }}</td>
                       <td>{{ transaction.merchant.company_name }}</td>
                       <td>{{ transaction.total }}</td>
+                      <td>{{ getRefund(transaction) }}</td>
                       <td>{{ transaction.currency }}</td>
                       <td>{{ transaction.status }}</td>
+                      <td>
+                        <Modal v-if="transaction.status === 'succeeded'">
+                          <template #activator="{ openModal }">
+                            <CustomButton title="Refund" :onClick="() => openModal()"></CustomButton>
+                          </template>
+                          <form class="modal-form">
+                            <h1>Refund transaction #{{ transaction.payment_id }}</h1>
+                            <label>Amount to refund ({{ transaction.currency }})</label>
+                            <input type="number" v-model="refundAmount">
+                            <CustomButton title="Refund" :onClick="() => refund(transaction.payment_id)"></CustomButton>
+                          </form>
+                        </Modal>
+                      </td>
                   </tr>
               </template>
           </TableList>
@@ -40,10 +56,13 @@
 import { ref, onMounted } from 'vue';
 import transactionService from '../services/transactionService';
 import TableList from "./TableList.vue";
+import CustomButton from "./CustomButton.vue";
+import Modal from "./Modal.vue";
 
 const transactions = ref([]);
 const searchTerm = ref('');
 const searchCriterion = ref('');
+const refundAmount = ref(0);
 
 onMounted(async () => {
     try {
@@ -62,10 +81,32 @@ const searchTransactions = async () => {
         }
     }
 };
+
+const refund = async (paymentId) => {
+    try {
+        await transactionService.refund(paymentId, refundAmount.value);
+        transactions.value = await transactionService.getAllTransactions(searchTerm.value, searchCriterion.value);
+        refundAmount.value = 0;
+    } catch (error) {
+        console.error('Refund error', error);
+    }
+};
+
+const getRefund = (transaction) => {
+  const operations = transaction.operations.filter(operation => operation.type === 'refund' && operation.status === 'succeeded');
+  return operations.reduce((acc, operation) => acc + Number(operation.amount), 0);
+}
 </script>
 
 <style scoped>
  .table {
      margin: 20px;
+ }
+ .modal-form {
+   gap: 20px;
+   display: flex;
+   flex-direction: column;
+   margin: auto;
+   max-width: 300px;
  }
 </style>

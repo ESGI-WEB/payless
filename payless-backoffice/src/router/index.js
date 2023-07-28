@@ -49,7 +49,11 @@ const routes = [
       const token = localStorage.getItem('authToken')
       if(token) {
         const decodedToken = VueJwtDecode.decode(token);
-        if (token && decodedToken.role !== 'admin') {
+        if (decodedToken !== null && decodedToken.role === 'merchant-to-validate') {
+          next('/waiting-page');
+          return;
+        }
+        if (decodedToken != null && decodedToken.role !== 'admin') {
           next('/')
           return;
         }
@@ -65,7 +69,11 @@ const routes = [
       const token = localStorage.getItem('authToken')
       if(token) {
         const decodedToken = VueJwtDecode.decode(token);
-        if (token && decodedToken.role !== 'admin') {
+        if (decodedToken !== null && decodedToken.role === 'merchant-to-validate') {
+          next('/waiting-page');
+          return;
+        }
+        if (decodedToken != null && decodedToken.role !== 'admin') {
           next('/')
           return;
         }
@@ -81,6 +89,10 @@ const routes = [
       const token = localStorage.getItem('authToken')
       if(token) {
         const decodedToken = VueJwtDecode.decode(token);
+        if (decodedToken !== null && decodedToken.role === 'merchant-to-validate') {
+          next('/waiting-page');
+          return;
+        }
         if (decodedToken !== null && ["admin","merchant"].includes(decodedToken.role)) {
           next();
           return;
@@ -97,7 +109,11 @@ const routes = [
       const token = localStorage.getItem('authToken')
       if(token) {
         const decodedToken = VueJwtDecode.decode(token);
-        if (token && decodedToken.role !== 'admin') {
+        if (decodedToken !== null && decodedToken.role === 'merchant-to-validate') {
+          next('/waiting-page');
+          return;
+        }
+        if (decodedToken != null && decodedToken.role !== 'admin') {
           next('/')
           return;
         }

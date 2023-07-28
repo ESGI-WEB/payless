@@ -104,6 +104,7 @@
 import {inject, reactive, ref} from 'vue';
 import {useRouter} from "vue-router";
 import {loginKey, registerKey} from "@/services/authKeys";
+import VueJwtDecode from "vue-jwt-decode";
 
 const router = useRouter();
 const formData = ref({
@@ -135,7 +136,18 @@ const submitForm = async () => {
         for(const key in errors) {
             errors[key] = [];
         }
-        register(formData.value)
+        await register(formData.value)
+        const token = localStorage.getItem('authToken')
+        if(token) {
+            const decodedToken = VueJwtDecode.decode(token);
+            if (decodedToken.role === 'admin') {
+                router.push('/dashboard')
+            } else if (decodedToken.role === 'merchant') {
+                router.push('/merchant')
+            } else {
+                router.push('/waiting-page')
+            }
+        }
 
        /* if (response.status === 201) {
             await router.push("/login");

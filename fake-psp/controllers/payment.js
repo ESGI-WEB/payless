@@ -39,7 +39,7 @@ module.exports = function () {
 
                 setTimeout(() => {
                     fetch(url, fetchOptions)
-                }, 30 * 1000);
+                }, 10 * 1000);
 
                 res.sendStatus(202);
             } catch (err) {

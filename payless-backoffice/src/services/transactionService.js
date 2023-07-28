@@ -77,7 +77,11 @@ export default {
             if (response.status === 422) {
                 return await response.json()
             }
-            throw new Error('Error for refund');
+            if (response.status === 403) {
+                return 'A refund is already processing';
+            }
+
+            return 'You cannot refund this payment';
         }
 
         return true;

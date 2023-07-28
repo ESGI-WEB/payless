@@ -159,7 +159,6 @@ const findAll = async function (criteria = {}, options = {}) {
     let query = paymentCollection.find(criteria);
 
     if (options.order !== {}) {
-      console.log(options.order)
       query = query.sort(options.order);
     }
 
@@ -409,8 +408,8 @@ const refund = async function (id, data) {
       return acc;
     }, 0);
 
-    if (!amount || amount <= 0) {
-        throw new ValidationError({amount: ["Amount is required"]});
+    if (!amount || amount <= 0 || !isFinite(amount) || isNaN(amount)) {
+        throw new ValidationError({amount: ["Amount is required and must be a positive number"]});
     }
     if (amount > payment.total - refundedAmount) {
       throw new ValidationError({amount: ["Amount is bigger than total amount"]});

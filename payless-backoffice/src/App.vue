@@ -1,29 +1,17 @@
-<template>
-    <div id="app">
-        <nav v-if="$route.meta.showNavbar">
-            <ul>
-                <li><router-link to="/dashboard">Dashboard</router-link></li>
-                <li><router-link to="/merchantlist">Merchant List </router-link></li>
-                <li><router-link to="/transaction">Transaction List </router-link></li>
-                <li><router-link to="admin">Admin Home</router-link></li>
-            </ul>
-        </nav>
-        <router-view/>
-    </div>
-</template>
+<script setup>
+import AuthProvider from './services/auth.vue';
+import SecuredZoneView from "@/views/SecuredZoneView.vue";
+import NavbarHome from "@/components/NavbarHome.vue";
 
-
-<script>
-import { computed } from 'vue';
-import login from './views/Login.vue';
-import authService from './services/authService';
-
-export default {
-    components: {
-        login
-    },
-    setup() {
-    }
-};
 </script>
 
+<template>
+    <AuthProvider #default="{ user }">
+        <NavbarHome v-if="user === null" />
+        <SecuredZoneView v-else />
+    </AuthProvider>
+</template>
+
+<style scoped>
+
+</style>

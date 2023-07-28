@@ -3,7 +3,8 @@
         <h3>Payment</h3>
 
         <div>
-            <h4>Amount : {{ transactionData.total_amount }}</h4>
+            <h4>Amount: {{ transactionData.total_amount }}</h4>
+            <h4>Number of transactions: {{ transactionData.number_of_transactions }}</h4>
         </div>
 
         <div>
@@ -50,15 +51,10 @@ onMounted(async () => {
 
 <style scoped>
 .transaction-card {
-    width: 90%;
-    max-width: 500px;
     background: #FFFFFF;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 2rem;
-    margin: 1rem auto;
-    display: flex;
-    flex-direction: column;
 }
 
 .transaction-card h3 {

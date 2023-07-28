@@ -10,10 +10,11 @@ module.exports = () => {
     router.get("/:uuid/checkout", checkoutAuth(), PaymentController.checkout);
     router.post("/:uuid/cancel", auth('merchant', true, true), PaymentController.cancel);
     router.post("/:uuid/validate", auth('merchant', true, true), PaymentController.validate);
-    router.get('/', auth(), PaymentController.cget);
-    router.get('/get-amount-and-number-of-transactions',auth(), PaymentController.getAmountAndNumberOfTransactions)
-    router.get('/get-merchant', auth(), PaymentController.getMerchant)
-    router.get('/get-chart-data', auth(), PaymentController.getChartData)
+    router.post("/:id/refund", auth('merchant'), PaymentController.refund);
+    router.get('/', auth('merchant'), PaymentController.cget);
+    router.get('/get-amount-and-number-of-transactions', auth('admin'), PaymentController.getAmountAndNumberOfTransactions)
+    router.get('/get-merchant', auth('admin'), PaymentController.getMerchant)
+    router.get('/get-chart-data', auth('admin'), PaymentController.getChartData)
 
     return router;
 };

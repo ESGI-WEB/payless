@@ -52,5 +52,27 @@ module.exports = {
         if (Object.keys(errorsFields).length > 0) {
             throw new ValidationError(errorsFields);
         }
+        // we should create an object that is stored, and return to payless api, to register id and use it for refunds
+    },
+    refund: function (data) {
+        const {
+            amount = null,
+            currency = null,
+        } = data;
+
+        const errorsFields = {};
+
+        if (!amount || !isFinite(amount) || amount <= 0) {
+            errorsFields['amount'] = ['amount is invalid'];
+        }
+
+        if (!currency || !currency.trim() || !["EUR", "USD", "CHF", "GBP"].includes(currency)) {
+            errorsFields['currency'] = ['currency is invalid'];
+        }
+
+        if (Object.keys(errorsFields).length > 0) {
+            throw new ValidationError(errorsFields);
+        }
+        // we should check a object stored to refund the right person
     }
 }

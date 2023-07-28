@@ -97,9 +97,6 @@ module.exports = function () {
         const payment = await paymentService.findOneBy(
             {
               uuid: req.params.uuid,
-            },
-            {
-              include: Operation,
             }
         );
 
@@ -131,6 +128,25 @@ module.exports = function () {
         next(e);
       }
     },
+    refund: async function (req, res, next) {
+      try {
+        const payment = await paymentService.findOneBy({id: req.params.id});
+
+        if (!payment) {
+          res.sendStatus(404);
+        }
+
+        if (payment.status !== "succeeded") {
+          res.sendStatus(403);
+        }
+
+        await paymentService.refund(payment.id, req.body);
+
+        res.sendStatus(200);
+      } catch (e) {
+        next(e);
+      }
+    },
     cget: async (req, res, next) => {
       const {
         _page = 1,
@@ -139,7 +155,11 @@ module.exports = function () {
         ...criteria
       } = req.query;
       try {
-        const data = await paymentService.findAll(criteria, {
+        let criteriaSecured = criteria
+        if (req.user.role !== "admin") {
+          criteriaSecured = {...criteria, merchant: {...criteria.merchant ?? {}, id: req.user.id}};
+        }
+        const data = await paymentService.findAll(criteriaSecured, {
           offset: (_page - 1) * _itemsPerPage,
           limit: _itemsPerPage,
           order: _sort,

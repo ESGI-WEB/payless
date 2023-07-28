@@ -1,10 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import TransactionList from "@/components/TransactionList.vue";
-import LoginView from "@/views/LoginView.vue";
-import RegisterView from "@/views/RegisterView.vue";
-import Dashboard from "@/components/Dashboard.vue";
-import HomeView from "@/views/HomeView.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+
+import Dashboard from "../components/Dashboard.vue";
+import MerchantList from "../components/MerchantList.vue";
+import TransactionList from "../components/TransactionList.vue";
 import VueJwtDecode from "vue-jwt-decode"
+import LoginView from "../views/LoginView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import HomeView from "../views/HomeView.vue";
 
 const routes = [
   {
@@ -37,16 +39,41 @@ const routes = [
   {
     path: '/transaction',
     component: TransactionList,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        if (decodedToken !== null) {
+          next('/');
+        }
+      } else {
+        next()
+      }
+    }
   },
   {
     path: '/dashboard',
     component: Dashboard,
     beforeEnter: (to, from, next) => {
       const token = localStorage.getItem('token')
-      if(!token) {
+      if (!token) {
         next('/');
+      } else {
+        next()
       }
-    },
+    }
+  },
+  {
+    path: '/merchantlist',
+    name: 'MerchantList',
+    component: MerchantList,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        next('/');
+      } else {
+        next()
+      }
+    }
   }
 ];
 

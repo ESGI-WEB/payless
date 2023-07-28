@@ -5,6 +5,9 @@ module.exports = (roles = null, verifyUsingUserSecret = false, checkReferer = fa
     if (roles && !Array.isArray(roles)) {
         roles = [roles]
     }
+    if (roles && !roles.includes('admin')) {
+        roles.push('admin');
+    }
 
     return async (req, res, next) => {
         try {

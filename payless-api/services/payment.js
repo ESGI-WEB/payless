@@ -4,6 +4,7 @@ const ValidationError = require("../errors/ValidationError");
 const ServiceError = require("../errors/ServiceError");
 const operationService = require("./operation");
 const { connectToDatabase, closeDatabaseConnection } = require("../db/mongo");
+const jwt = require("jsonwebtoken");
 
 const findOneBy = async function (criteria = {}, options = {}) {
   return await Payment.findOne({
@@ -158,6 +159,7 @@ const findAll = async function (criteria = {}, options = {}) {
     let query = paymentCollection.find(criteria);
 
     if (options.order !== {}) {
+      console.log(options.order)
       query = query.sort(options.order);
     }
 
@@ -333,7 +335,7 @@ const getChartData = async function (criteria = {}, user) {
 
       return await cursor.toArray();
 
-    } else if (user.role === "admini") {
+    } else if (user.role === "admin") {
       const matchCriteria = {};
       if (criteria.startDate && criteria.endDate) {
         matchCriteria.created_date = {
@@ -391,12 +393,88 @@ const format = function (payments) {
   return payments.map((payment) => payment.format());
 };
 
+const refund = async function (id, data) {
+  const transaction = await connection.transaction();
+  try {
+    const {
+      amount = null
+    } = data;
+
+    const payment = await findOneBy({id});
+    const operations = await payment.getOperations();
+    const refundedAmount = operations.reduce((acc, operation) => {
+      if (operation.type === "refund" && operation.status !== "cancelled") {
+        return acc + Number(operation.amount);
+      }
+      return acc;
+    }, 0);
+
+    if (!amount || amount <= 0) {
+        throw new ValidationError({amount: ["Amount is required"]});
+    }
+    if (amount > payment.total - refundedAmount) {
+      throw new ValidationError({amount: ["Amount is bigger than total amount"]});
+    }
+
+    const newRefund = await operationService.create({
+      amount,
+      type: "refund",
+      PaymentId: payment.id,
+    });
+
+    // we should send an id to psp, as it will be used to identify the operation and refund the right card
+    const jwt = require("jsonwebtoken");
+    const pspQuery = await fetch(process.env.PSP_URL + "/payments/refund", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + process.env.PSP_TOKEN,
+      },
+      body: JSON.stringify({
+        amount,
+        currency: payment.currency,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+              "Bearer " +
+              jwt.sign({ operationId: newRefund.uuid }, process.env.JWT_SECRET),
+        },
+        url:
+            process.env.BASE_PSP_URL_NOTIFICATION +
+            `/operations/${newRefund.uuid}/mark-as-done`,
+      }),
+    });
+
+    payment.update({ status: "processing" });
+
+    if (pspQuery.status != 202) {
+      if (pspQuery.status == 422) {
+        throw new ValidationError(await pspQuery.json());
+      }
+      throw new ServiceError("PSP error");
+    }
+
+    await operationService.update(
+        { uuid: newRefund.uuid },
+        { status: "pending" }
+    );
+  } catch (err) {
+    await transaction.rollback();
+    if (err instanceof Sequelize.ValidationError) {
+      throw ValidationError.createFromSequelizeValidationError(err);
+    }
+    throw err;
+  }
+}
+
 module.exports = {
   findOneBy,
   create,
   update,
   validate,
   format,
+  refund,
   findAll,
   getAmountAndNumberOfTransactions,
   getMerchant,

@@ -15,11 +15,21 @@ module.exports = function () {
 
                 const payment = await operation.getPayment();
 
+                await paymentService.update({id: operation.PaymentId}, {status: 'succeeded'});
+
                 if (operation.type === 'capture') {
-                    await paymentService.update({id: operation.PaymentId}, {status: 'succeeded'});
+                    await payment.notify('succeeded');
                 }
 
-                await payment.notify('succeeded');
+                if (operation.type === 'refund') {
+                    const refundOperations = await payment.getOperations({where: {type: 'refund'}});
+                    const refundAmount = refundOperations.reduce((acc, operation) => acc + operation.amount, 0);
+                    if (refundAmount >= payment.amount) { // greater is not possible, but just in case of
+                        await payment.notify('refunded');
+                        // maybe add a refund status to payment ?
+                    }
+                }
+
 
                 res.json(operationService.format(operation));
             } catch (e) {

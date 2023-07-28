@@ -1,21 +1,14 @@
 <template>
-    <!--<div>
+    <div>
         <h1>Waiting Page</h1>
         <p>Please wait, your role is not validated yet.</p>
         <button @click="logout">Logout</button>
-    </div>-->
+    </div>
 </template>
 
 <script setup>
-/*import authService from "../services/authService";
-import router from "../router";
+import {inject} from "vue";
+import {logoutKey} from "@/services/authKeys";
 
-const logout = async () => {
-    try {
-        await authService.logout();
-        await router.push('/login');
-    } catch (error) {
-        console.error('Logout Error', error);
-    }
-};*/
+const logout = inject(logoutKey)
 </script>

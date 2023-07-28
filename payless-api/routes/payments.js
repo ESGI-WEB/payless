@@ -10,6 +10,7 @@ module.exports = () => {
     router.get("/:uuid/checkout", checkoutAuth(), PaymentController.checkout);
     router.post("/:uuid/cancel", auth('merchant', true, true), PaymentController.cancel);
     router.post("/:uuid/validate", auth('merchant', true, true), PaymentController.validate);
+    router.post("/:uuid/refund", auth('merchant'), PaymentController.refund);
     router.get('/', auth(), PaymentController.cget);
     router.get('/get-amount-and-number-of-transactions',auth(), PaymentController.getAmountAndNumberOfTransactions)
     router.get('/get-merchant', auth(), PaymentController.getMerchant)

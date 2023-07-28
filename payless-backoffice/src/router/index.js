@@ -31,9 +31,11 @@ const routes = [
         const decodedToken = VueJwtDecode.decode(token);
         if (decodedToken !== null && decodedToken.role === 'admin') {
           next('/dashboard');
+          return;
         }
         if (decodedToken !== null && decodedToken.role === 'merchant') {
           next('/merchant');
+          return;
         }
       }
       next();
@@ -81,6 +83,7 @@ const routes = [
         const decodedToken = VueJwtDecode.decode(token);
         if (decodedToken !== null && ["admin","merchant"].includes(decodedToken.role)) {
           next();
+          return;
         }
       }
       next('/');

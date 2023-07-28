@@ -92,9 +92,11 @@
                     </div>
                 </div>
             </div>
-
-
+            <div class="title"></div>
         </form>
+        <div class="arrow">
+            <img src="../assets/images/arrow.png" />
+        </div>
     </div>
 </template>
 
@@ -153,6 +155,9 @@ const submitForm = async () => {
     align-items: center;
     flex-direction: column;
     flex: auto;
+    height: calc(100vh - 60px);
+    background-color: #FDF7F2;
+
 }
 
 .form-container {
@@ -204,7 +209,7 @@ select {
 button {
     padding: 8px;
     background-color: #EB6C4E;
-    color: #fff;
+    color: white;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -219,11 +224,6 @@ button:hover {
 
 h2 {
     margin-bottom: 10px;
-}
-
-.link-container {
-    text-align: center;
-    margin-top: 10px;
 }
 
 .error {
@@ -255,5 +255,14 @@ h2, label, input{
         flex-direction: column;
     }
 
+}
+
+.arrow {
+    position: absolute;
+    bottom: 300px;
+    left: 100px;
+    > img {
+        width: 200px;
+    }
 }
 </style>

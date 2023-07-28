@@ -1,16 +1,22 @@
 <template>
-    <form @submit.prevent="submitForm">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="formData.email" required>
+    <div class="container">
+        <form @submit.prevent="submitForm" class="login-form">
+            <div class="title">Login form</div>
+            <div class="input-label">
+                <label for="email">Email</label>
+                <input type="email" id="email" v-model="formData.email" required>
+            </div>
+            <div class="input-label">
+                <label for="password">Password</label>
+                <input type="password" id="password" v-model="formData.password" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="formData.password" required>
-
-        <button type="submit">Sign in</button>
-        <div class="link-container">
-            <router-link to="/register" class="centre">Register</router-link>
+            </div>
+            <button type="submit">Sign in</button>
+        </form>
+        <div class="arrow">
+            <img src="../assets/images/arrow.png" />
         </div>
-    </form>
+    </div>
 </template>
 
 <script setup>
@@ -54,32 +60,27 @@ body {
 form {
     display: flex;
     flex-direction: column;
-    max-width: 300px;
-    margin: 20px auto;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    border-radius: 5px;
+    border-radius: 20px;
 }
 
 label {
     margin-bottom: 5px;
     color: #333;
     font-size: 0.9em;
-    font-family: serif;
 }
 
-input {
+input,
+select {
+    background-color: white;
     padding: 6px;
     margin-bottom: 10px;
     border: 1px solid #aaa;
     border-radius: 3px;
 }
-
 button {
     padding: 8px;
     background-color: #EB6C4E;
-    color: #F6CA88;
+    color: white;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -90,8 +91,46 @@ button:hover {
     background-color: #C05640;
 }
 
-.link-container {
+.title {
+    font-family: Amaranth;
+    font-size: 1.5rem;
     text-align: center;
-    margin-top: 10px;
+    margin: 20px 0;
+    background-color: white;
+}
+
+.login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 30px;
+    gap:20px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex: auto;
+    height: calc(100vh - 60px);
+    background-color: #FDF7F2;
+
+}
+
+.input-label {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.arrow {
+    position: absolute;
+    bottom: 300px;
+    left: 100px;
+    > img {
+        width: 200px;
+    }
 }
 </style>

@@ -20,8 +20,8 @@
         <a>Support</a>
       </div>
       <div class="account">
-        <a @click="$router.push('/register')" class="log-in">Log in</a>
-        <a @click="$router.push('/login')" class="register">Get Started</a>
+        <a @click="$router.push('/login')" class="log-in">Log in</a>
+        <a @click="$router.push('/register')" class="register">Get Started</a>
       </div>
     </nav>
     <router-view />
@@ -46,7 +46,9 @@ nav {
   display: flex;
   flex-direction: row;
   align-items: center;
+    height: 60px;
   justify-content: space-between;
+    background-color: #FDF7F2;
 }
 .icon {
   font-family: Amaranth;

@@ -124,6 +124,7 @@ import router from "@/router";
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 100px;
+    background-color: #FDF7F2;
+    height: calc(100vh - 60px);
 }
 </style>

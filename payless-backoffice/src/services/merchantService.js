@@ -17,7 +17,7 @@ async getAllMerchants(page = 1, limit = 10) {
     },
 
     async getMerchantTransactions(merchantId) {
-        const response = await fetch(`${API_BASE_URL}/users/${merchantId}/payment`);
+        const response = await fetch(`${API_BASE_URL}/payments?${merchantId}`);
 
         if (!response.ok) {
             throw new Error('Error on data merchant');

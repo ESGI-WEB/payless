@@ -41,10 +41,9 @@ const routes = [
     component: TransactionList,
     beforeEnter: (to, from, next) => {
       const token = localStorage.getItem('token')
-      if (token) {
-        if (decodedToken !== null) {
+      const decodedToken = VueJwtDecode.decode(token);
+      if (token && decodedToken.role !== 'admin') {
           next('/');
-        }
       } else {
         next()
       }
@@ -55,7 +54,8 @@ const routes = [
     component: Dashboard,
     beforeEnter: (to, from, next) => {
       const token = localStorage.getItem('token')
-      if (!token) {
+      const decodedToken = VueJwtDecode.decode(token);
+      if (token && decodedToken.role !== 'admin') {
         next('/');
       } else {
         next()
@@ -68,7 +68,8 @@ const routes = [
     component: MerchantList,
     beforeEnter: (to, from, next) => {
       const token = localStorage.getItem('token')
-      if (!token) {
+      const decodedToken = VueJwtDecode.decode(token);
+      if (token && decodedToken.role !== 'admin') {
         next('/');
       } else {
         next()

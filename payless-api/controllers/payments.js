@@ -97,9 +97,6 @@ module.exports = function () {
         const payment = await paymentService.findOneBy(
             {
               uuid: req.params.uuid,
-            },
-            {
-              include: Operation,
             }
         );
 
@@ -126,6 +123,25 @@ module.exports = function () {
         );
 
         await payment.notify('cancelled');
+        res.sendStatus(200);
+      } catch (e) {
+        next(e);
+      }
+    },
+    refund: async function (req, res, next) {
+      try {
+        const payment = await paymentService.findOneBy({uuid: req.params.uuid});
+
+        if (!payment) {
+          res.sendStatus(404);
+        }
+
+        if (payment.status !== "succeeded") {
+          res.sendStatus(403);
+        }
+
+        await paymentService.refund(payment.uuid, req.body);
+
         res.sendStatus(200);
       } catch (e) {
         next(e);

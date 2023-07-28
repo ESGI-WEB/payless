@@ -17,26 +17,31 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { showNavbar: true },
     },
     {
       path: '/login',
       name: 'Login',
       component: Login,
+      meta: { showNavbar: true },
     },
     {
       path: '/register',
       name: 'Register',
       component: Register,
+      meta: { showNavbar: true },
     },
     {
       path: '/admin',
       name: 'Admin',
       component: AdminView,
+      meta: { requiresAuth : true},
     },
     {
       path: '/merchant',
       name: 'Merchant',
       component: MerchantView,
+      meta: { requiresAuth : true},
     },
     {
       path: '/waiting',
@@ -47,19 +52,19 @@ const router = createRouter({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard,
-      meta: { showNavbar: true, requiresAuth : true},
+      meta: { requiresAuth : true},
     },
     {
       path: '/merchantlist',
       name: 'MerchantList',
       component: MerchantList,
-      meta: { showNavbar: true, requiresAuth : true},
+      meta: { requiresAuth : true},
     },
     {
       path: '/transaction',
       name: 'Transaction',
       component: TransactionList,
-      meta: { showNavbar: true, requiresAuth : true},
+      meta: { requiresAuth : true },
     },
   ]
 })

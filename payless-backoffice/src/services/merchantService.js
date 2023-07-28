@@ -72,18 +72,35 @@ async getAllMerchants(page = 1, limit = 10) {
         return true;
     },
     async refuseMerchantRole(merchantId) {
-    const response = await fetch(`${API_BASE_URL}/users/${merchantId}/refuse`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-        },
-    });
+        const response = await fetch(`${API_BASE_URL}/users/${merchantId}/refuse`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            },
+        });
 
-    if (!response.ok) {
-        throw new Error('Error in validation refuse');
+        if (!response.ok) {
+            throw new Error('Error in validation refuse');
+        }
+
+        return true;
+    },
+
+    async me() {
+        const response = await fetch(`${API_BASE_URL}/me`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Error in validation refuse');
+        }
+
+        return await response.json();
     }
 
-    return true;
-    },
 };

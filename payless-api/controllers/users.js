@@ -42,5 +42,17 @@ module.exports = function () {
                 next(e)
             }
         },
+        me: async function (req, res, next) {
+            try {
+                if (!req.user) return res.sendStatus(403);
+
+                const user = await userService.findById(req.user.id);
+                if (!user) return res.sendStatus(404);
+
+                res.status(200).json(user.format());
+            } catch (e) {
+                next(e)
+            }
+        },
     };
 };

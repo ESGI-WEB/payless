@@ -115,8 +115,8 @@ async function updateOperationOnPaymentDocument(operation) {
         }
 
         if (operationToUpdate.status !== operation.status) {
-            await paymentCollection.updateOne(
-                { "operations.id": operation.id },
+            const r = await paymentCollection.updateOne(
+                { "operations.id": operation.id.toString() },
                 { $set: { "operations.$.status": operation.status } }
             );
 

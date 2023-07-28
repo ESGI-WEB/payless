@@ -9,6 +9,7 @@ const requestMiddleware = require("./middlewares/request");
 const paymentRouter = require("./routes/payments")();
 const userRouter = require("./routes/users")();
 const operationRouter = require("./routes/operations")();
+const userController = require("./controllers/users")();
 
 var corsOptions = {
   origin: async function (origin, callback) {
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(requestMiddleware);
 
+app.get("/me", auth('merchant'), userController.me);
 app.use(new SecurityRouter(userService));
 app.use("/users", auth('admin'), userRouter);
 app.use("/payments", paymentRouter);

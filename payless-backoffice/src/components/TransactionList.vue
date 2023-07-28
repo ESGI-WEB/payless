@@ -45,10 +45,8 @@
                   <h1>Refund transaction #{{ transaction.payment_id }}</h1>
                   <label>Amount to refund ({{ transaction.currency }})</label>
                   <input type="number" v-model="refundAmount" />
-                  <CustomButton
-                    title="Refund"
-                    :onClick="() => refund(transaction.payment_id)"
-                  ></CustomButton>
+                  <CustomButton title="Refund" :onClick="() => refund(transaction.payment_id)"></CustomButton>
+                  <p v-show="refundMessage">{{refundMessage}}</p>
                 </form>
               </Modal>
             </td>
@@ -66,10 +64,11 @@ import TableList from './TableList.vue'
 import CustomButton from './CustomButton.vue'
 import Modal from './Modal.vue'
 
-const transactions = ref([])
-const searchTerm = ref('')
-const searchCriterion = ref('')
-const refundAmount = ref(0)
+const transactions = ref([]);
+const searchTerm = ref('');
+const searchCriterion = ref('');
+const refundAmount = ref(0);
+const refundMessage = ref('');
 
 onMounted(async () => {
   try {
@@ -96,21 +95,28 @@ const searchTransactions = async () => {
 }
 
 const refund = async (paymentId) => {
-  try {
-    await transactionService.refund(paymentId, refundAmount.value)
-    transactions.value = await transactionService.getAllTransactions(
-      searchTerm.value,
-      searchCriterion.value
-    )
-    refundAmount.value = 0
-  } catch (error) {
-    console.error('Refund error', error)
-  }
-}
+    try {
+        refundMessage.value = 'Loading...';
+        const response = await transactionService.refund(paymentId, refundAmount.value);
+        if (response !== true) {
+          if (typeof response === 'string') {
+            refundMessage.value = response;
+          } else if (typeof response === 'object') {
+            refundMessage.value = Object.values(response).join(', ');
+          }
+          return;
+        }
+        transactions.value = await transactionService.getAllTransactions(searchTerm.value, searchCriterion.value);
+        refundAmount.value = 0;
+        refundMessage.value = 'Refund successfully created';
+    } catch (error) {
+        console.error('Refund error', error);
+    }
+};
 
 const getRefund = (transaction) => {
   const operations = transaction.operations.filter(
-    (operation) => operation.type === 'refund' && operation.status === 'succeeded'
+    (operation) => operation.type === 'refund' && operation.status !== 'cancelled'
   )
   return operations.reduce((acc, operation) => acc + Number(operation.amount), 0)
 }

@@ -9,7 +9,7 @@ module.exports = function (connection) {
 
         async checkPassword(password) {
             const bcrypt = require("bcryptjs");
-            return bcrypt.compare(password, this.password);
+            return await bcrypt.compare(password, this.password);
         }
 
         generateToken() {

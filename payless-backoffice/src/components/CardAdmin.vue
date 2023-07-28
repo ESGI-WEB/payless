@@ -4,7 +4,7 @@
             <div class="small-title">Transactions</div>
             <div class="transaction-amount">
                 <div class="amount-total">{{ transactionData.total_amount }} {{ transactionData.currency }}</div>
-                <div> {{ transactionData.number_of_transactions }}</div>
+                <div>out of {{ transactionData.number_of_transactions }}</div>
             </div>
         </div>
 
@@ -74,7 +74,8 @@ onMounted(async () => {
 .transaction-amount {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 10px;
 }
 
 .small-title {

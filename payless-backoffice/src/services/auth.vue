@@ -12,7 +12,7 @@
     const user = ref(null);
 
     onMounted(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         if (token) {
             user.value = JSON.parse(atob(token.split('.')[1]));
         }
@@ -35,7 +35,7 @@
 
             const data = await response.json();
             const token = data.token;
-            localStorage.setItem('token', token);
+            localStorage.setItem('authToken', token);
             user.value = JSON.parse(atob(token.split('.')[1]));
             return Promise.resolve(data);
         } catch (error) {
@@ -44,7 +44,7 @@
     }
 
     function logout() {
-        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
         user.value = null;
         router.push('/');
     }
@@ -75,7 +75,7 @@
 
             const data = await response.json();
             const token = data.token;
-            localStorage.setItem('token', token);
+            localStorage.setItem('authToken', token);
             user.value = JSON.parse(atob(token.split('.')[1]));
             return Promise.resolve(data);
         } catch (error) {

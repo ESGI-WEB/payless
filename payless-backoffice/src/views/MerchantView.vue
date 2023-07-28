@@ -11,9 +11,9 @@
 </template>
 
 <script setup>
-import MerchantTransactionList from "@/components/MerchantTransactionList.vue";
-import MerchantDashboard from "@/components/MerchantDashboard.vue";
-import MerchantSpace from "@/components/MerchantSpace.vue";
+import MerchantDashboard from "../components/MerchantDashboard.vue";
+import MerchantSpace from "../components/MerchantSpace.vue";
+import MerchantTransactionList from "../components/MerchantTransactionList.vue";
 import authService from '../services/authService';
 import router from "../router";
 

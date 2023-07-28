@@ -6,8 +6,8 @@
 </template>
 
 <script setup>
-import CardAdmin from "@/components/CardAdmin.vue";
-import LineChart from '@/components/LineChart.vue';
+import CardAdmin from "./CardAdmin.vue";
+import LineChart from "./LineChart.vue";
 import {ref} from "vue";
 
 let showLineChart = ref(false);

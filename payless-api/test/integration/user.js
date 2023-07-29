@@ -82,6 +82,44 @@ describe('Integration - /users', function () {
         });
     });
 
+    describe('GET /me', function () {
+        it('should return current user', async function () {
+            const response = await request(app)
+                .get(`/me`)
+                .set('Authorization', 'Bearer ' + user.token);
+
+            assert.strictEqual(response.status, 200);
+            assert.deepStrictEqual(response.body, user.format())
+        });
+
+        it('should return current user admin authenticated', async function () {
+            const response = await request(app)
+                .get(`/me`)
+                .set('Authorization', 'Bearer ' + admin.token);
+
+            assert.strictEqual(response.status, 200);
+            assert.deepStrictEqual(response.body, admin.format())
+        });
+
+        it('should throw error if not validated', async function () {
+            const userToValidateToken = (await User.create(getUserData())).generateToken();
+            const userRefusedToken = (await User.create({...getUserData(), role: 'refused'})).generateToken();
+
+            for (const token of [userToValidateToken, userRefusedToken]) {
+                const response = await request(app)
+                    .get(`/me`)
+                    .set('Authorization', 'Bearer ' + token);
+                assert.strictEqual(response.status, 403);
+            }
+        });
+
+        it('should throw error if not authenticated', async function () {
+            await request(app)
+                .get(`/me`)
+                .expect(401);
+        });
+    });
+
     describe('POST /', function () {
         it('should create a user', async function () {
             const newData = getUserData();

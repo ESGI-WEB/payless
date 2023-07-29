@@ -14,6 +14,9 @@ describe('Integration - /users', function () {
     beforeEach(async function () {
         // mock sendRegistrationMail
         sinon.stub(mailerService, 'sendRegistrationMail');
+        sinon.stub(mailerService, 'sendValidationMail')
+        sinon.stub(mailerService, 'sendRefusedMail')
+        sinon.stub(mailerService, 'sendEmail')
         admin = await User.findOne({where: {role: 'admin'}});
         admin.token = admin.generateToken();
         user = await User.findOne({where: {role: {[Op.not]: 'admin'}}});
@@ -404,6 +407,7 @@ const getUserData = () => {
         merchant_url: faker.internet.url(),
         confirmation_url: faker.internet.url(),
         cancel_url: faker.internet.url(),
+        webhook_url: faker.internet.url(),
         currency: constants.CURRENCIES[0],
         email: 'new-user' + faker.internet.email(),
         password: 'Azerty1*',

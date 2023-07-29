@@ -6,12 +6,14 @@ const {faker} = require('@faker-js/faker');
 const {Op} = require("sequelize");
 const sinon = require('sinon');
 const mailerService = require('../../services/mailer');
-const {sendEmail} = require("../../services/mailer");
 
 describe('Unit - User service', function () {
     beforeEach(function () {
         // mock sendRegistrationMail
         sinon.stub(mailerService, 'sendRegistrationMail')
+        sinon.stub(mailerService, 'sendValidationMail')
+        sinon.stub(mailerService, 'sendRefusedMail')
+        sinon.stub(mailerService, 'sendEmail')
     });
 
     afterEach(function () {
@@ -342,6 +344,7 @@ const getUserData = () => {
         merchant_url: faker.internet.url(),
         confirmation_url: faker.internet.url(),
         cancel_url: faker.internet.url(),
+        webhook_url: faker.internet.url(),
         currency: constants.CURRENCIES[0],
         email: 'new-user' + faker.internet.email(),
         password: 'Azerty1*',
@@ -358,6 +361,7 @@ const merchantRequiredFields = [
     'merchant_url',
     'confirmation_url',
     'cancel_url',
+    'webhook_url',
     'currency',
     'email',
     'password',

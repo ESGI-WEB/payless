@@ -16,8 +16,8 @@ async function connectToDatabase() {
 
         try {
             await client.connect();
-            console.log('Connected to MongoDB!');
-            const db = client.db('payless_prod');
+            // console.log('Connected to MongoDB!');
+            const db = client.db(process.env.NODE_ENV === 'production' ? 'payless_prod' : 'payless_dev');
             paymentCollection = db.collection('payment');
         } catch (error) {
             console.error('Error connecting to MongoDB:', error);
@@ -32,7 +32,7 @@ async function closeDatabaseConnection() {
     if (client) {
         try {
             await client.close();
-            console.log('MongoDB connection closed.');
+            // console.log('MongoDB connection closed.');
             client = null;
             paymentCollection = null;
         } catch (error) {

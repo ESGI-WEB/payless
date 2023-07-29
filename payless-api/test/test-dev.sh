@@ -3,15 +3,20 @@ if [ "$NODE_ENV" = "production" ]; then
   exit 1
 fi
 
-echo "Running migration"
-node migrate.js
+# check that flag --no-seed is not present
+if [ "$1" != "--only" ]; then
+  echo "Running migration"
+  node migrate.js
 
-echo "Running seed"
-node seed.js
+  echo "Running seed"
+  node seed.js
 
-if [ $? -ne 0 ]; then
-  echo "database seed failed."
-  exit 1
+  if [ $? -ne 0 ]; then
+    echo "database seed failed."
+    exit 1
+  fi
+else
+  echo "Skipping migration and seed"
 fi
 
 echo "Running test"

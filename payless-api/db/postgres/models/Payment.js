@@ -62,10 +62,10 @@ module.exports = function (connection) {
                 type: DataTypes.ENUM(constants.CURRENCIES),
                 allowNull: false,
             },
-            client_field: {
+            client_field: { // can be anything
                 type: DataTypes.STRING,
             },
-            order_field: {
+            order_field: { // can be anything
                 type: DataTypes.STRING,
             },
             status: {

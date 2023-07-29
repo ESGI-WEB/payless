@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "build": "node index.js",
-    "test": "sh ./test/test-dev.sh"
+    "test": "sh ./test/test-dev.sh",
+    "test:only": "sh ./test/test-dev.sh --only"
   },
   "author": "",
   "license": "ISC",

@@ -52,3 +52,9 @@ Pour lancer les tests, il suffit de lancer la commande suivante :
 ```bash
 docker exec payless-api-1 npm test
 ```
+Cela seed la base de données avec des données de tests puis lance les tests
+
+Pour lancer uniquement les tests sans seed ni migration, lancer la commande suivante :
+```bash
+docker exec payless-api-1 npm run test:only
+```

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const userService = require('../../services/user');
-const {User} = require('../../db/postgres');
+const {User, connection} = require('../../db/postgres');
 const constants = require('../../helpers/constants');
 const {faker} = require('@faker-js/faker');
 const {Op} = require("sequelize");
@@ -8,7 +8,9 @@ const sinon = require('sinon');
 const mailerService = require('../../services/mailer');
 
 describe('Unit - User service', function () {
-    beforeEach(function () {
+    let transaction;
+    beforeEach(async function () {
+        transaction = await connection.transaction()
         // mock sendRegistrationMail
         sinon.stub(mailerService, 'sendRegistrationMail')
         sinon.stub(mailerService, 'sendValidationMail')
@@ -17,6 +19,7 @@ describe('Unit - User service', function () {
     });
 
     afterEach(function () {
+        transaction.rollback();
         sinon.restore();
     });
 
@@ -47,9 +50,10 @@ describe('Unit - User service', function () {
     });
 
     describe('#findById()', function () {
-        it('should return user with id 1', async function () {
-            const user = await userService.findById(1);
-            assert.strictEqual(user.id, 1);
+        it('should return user by id', async function () {
+            const exepectedUser = (await User.findAll({limit: 1}))[0];
+            const user = await userService.findById(exepectedUser.id);
+            assert.strictEqual(user.id, exepectedUser.id);
         });
 
         it('should return null if user not found', async function () {

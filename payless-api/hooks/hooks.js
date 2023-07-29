@@ -30,7 +30,7 @@ async function createPaymentDocument(payment) {
         });
 
         await paymentCollection.insertOne(paymentData);
-        console.log("Payment document added to MongoDB");
+        // console.log("Payment document added to MongoDB");
     } catch (error) {
         console.error("Error creating payment document:", error);
     } finally {
@@ -84,7 +84,7 @@ async function createOperationOnPaymentDocument(operation) {
             { payment_id: operation.PaymentId.toString() },
             { $push: { operations: operationData } }
         );
-        console.log("Operation added to MongoDB");
+        // console.log("Operation added to MongoDB");
     } catch (error) {
         console.error("Error updating payment document:", error);
     } finally {

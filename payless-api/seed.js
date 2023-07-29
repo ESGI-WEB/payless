@@ -1,7 +1,7 @@
 // fill your database with test data, on every running tests, your db will be filled with these data
 const {faker} = require('@faker-js/faker');
 const {DataTypes} = require("sequelize");
-const {User} = require('./db/postgres');
+const {User, Payment, Operation} = require('./db/postgres');
 const constants = require("./helpers/constants");
 
 const seed = async () => {
@@ -14,6 +14,7 @@ const seed = async () => {
 
         let i = 0;
         const users = [];
+        const createdUsers = [];
         const currencies = constants.CURRENCIES;
         const userRoles = ['merchant', 'merchant-to-validate', 'refused'];
 
@@ -66,8 +67,79 @@ const seed = async () => {
         });
 
         for (const user of users) {
-            await User.create(user);
+            createdUsers.push(await User.create(user));
         }
+
+        /**** PAYMENTS ***/
+        let paymentsCount = 7;
+        const createdPayments = [];
+        const createdMerchants = createdUsers.filter(user => user.role === 'merchant');
+        while (paymentsCount > 0) {
+            const statuses = ["succeeded", "processing", "pending", "cancelled"];
+            // payments linked to a specific user
+            createdPayments.push(await userUsedForMerchantDev.createPayment({
+                total: faker.finance.amount(),
+                currency: currencies[Math.floor(Math.random() * currencies.length)],
+                client_field: faker.lorem.sentence(),
+                order_field: faker.lorem.sentence(),
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+            }));
+            // payments with all data
+            createdPayments.push(await Payment.create({
+                total: faker.finance.amount(),
+                currency: currencies[Math.floor(Math.random() * currencies.length)],
+                client_field: faker.number.int(),
+                order_field: faker.number.int(),
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                UserId: createdMerchants[Math.floor(Math.random() * createdMerchants.length)].id,
+            }));
+            // payments with only mandatory data
+            createdPayments.push(await Payment.create({
+                total: faker.finance.amount(),
+                currency: currencies[Math.floor(Math.random() * currencies.length)],
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                UserId: createdMerchants[Math.floor(Math.random() * createdMerchants.length)].id,
+            }));
+            paymentsCount--;
+        }
+
+        /**** OPERATIONS ***/
+        const possibilities = ['paid', 'refunded', 'partial_refund'];
+        for (const payment of createdPayments) {
+            switch (payment.status) {
+                case 'pending':
+                case 'cancelled':
+                default:
+                    break;
+                case 'processing':
+                    await payment.createOperation({
+                        type: 'capture',
+                        amount: payment.total,
+                        last4: payment.currency,
+                    });
+                    break;
+                case 'succeeded':
+                    await payment.createOperation({
+                        type: 'capture',
+                        amount: payment.total,
+                        last4: payment.currency,
+                        status: 'succeeded',
+                    });
+                    const randomPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
+                    if (randomPossibility !== 'paid') {
+                        await payment.createOperation({
+                            type: 'refund',
+                            amount: randomPossibility === 'partial_refund' ? payment.total / 2 : payment.total,
+                            last4: payment.currency,
+                            status: 'succeeded',
+                        });
+                    }
+                    break;
+            }
+        }
+
+
+
     } catch (error) {
         console.error(error);
         process.exit(1);

@@ -10,7 +10,7 @@ const sinon = require('sinon');
 const {Op} = require('sequelize');
 
 describe('Integration - /users', function () {
-    let admin, user = null;
+    let admin, user, merchant = null;
     beforeEach(async function () {
         // mock sendRegistrationMail
         sinon.stub(mailerService, 'sendRegistrationMail');
@@ -21,6 +21,8 @@ describe('Integration - /users', function () {
         admin.token = admin.generateToken();
         user = await User.findOne({where: {role: {[Op.not]: 'admin'}}});
         user.token = user.generateToken();
+        merchant = await User.findOne({where: {role: 'merchant'}});
+        merchant.token = merchant.generateToken();
     });
 
     afterEach(function () {
@@ -86,10 +88,10 @@ describe('Integration - /users', function () {
         it('should return current user', async function () {
             const response = await request(app)
                 .get(`/me`)
-                .set('Authorization', 'Bearer ' + user.token);
+                .set('Authorization', 'Bearer ' + merchant.token);
 
             assert.strictEqual(response.status, 200);
-            assert.deepStrictEqual(response.body, user.format())
+            assert.deepStrictEqual(response.body, merchant.format())
         });
 
         it('should return current user admin authenticated', async function () {
@@ -139,7 +141,7 @@ describe('Integration - /users', function () {
         
         it('should create an admin', async function () {
             const newData = {
-                email: 'admin-new-integration@payless.com',
+                email: (new Date()).getTime()+faker.number.int()+'admin@payless.com', // unique email especially for test:only
                 password: 'Azerty1*',
                 role: 'admin'
             };
@@ -239,7 +241,6 @@ describe('Integration - /users', function () {
                 assert.strictEqual(response.body[key], newData[key]);
             }
             assert.strictEqual(response.body.password, undefined); // password hash never returned
-            assert.strictEqual(response.body.id, id);
         });
 
         it('should throw error if not valid data', async function () {

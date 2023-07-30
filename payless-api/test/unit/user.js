@@ -22,8 +22,8 @@ describe('Unit - User service', function () {
     });
 
     afterEach(function () {
-        transaction.rollback();
         sinon.restore();
+        transaction.rollback();
     });
 
     describe('#findAll()', function () {

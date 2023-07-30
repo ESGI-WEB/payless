@@ -15,7 +15,6 @@ module.exports = () => {
 
             // TODO check url is psp
 
-            console.log(req.headers);
 
             // const origin = req.headers.referer;
             // const authorizedUrl = user.merchant_url;

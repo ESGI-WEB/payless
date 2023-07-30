@@ -23,8 +23,8 @@ describe('Unit - Payment service', function () {
     });
 
     afterEach(function () {
-        transaction.rollback();
         sinon.restore();
+        transaction.rollback();
     });
 
     describe('#findOneBy()', function () {

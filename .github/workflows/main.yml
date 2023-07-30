@@ -1,0 +1,24 @@
+name: Testing
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        run: |
+          cp .env.test .env
+          docker-compose up -d --build
+
+      - name: Run tests with Docker Compose
+        run: docker-compose run api npm test 
+
+      - name: Tear down Docker Compose
+        run: docker-compose down

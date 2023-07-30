@@ -23,7 +23,7 @@ describe('Integration - /payments', function () {
         refusedMerchant = await User.findOne({where: {role: 'refused'}});
         refusedMerchant.token = refusedMerchant.generateToken();
         // prevent console.log
-        //sinon.stub(console, 'log');
+        sinon.stub(console, 'log');
         sinon.stub(console, 'error');
     });
 
@@ -248,6 +248,7 @@ describe('Integration - /payments', function () {
                 .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
                 .set('Authorization', 'Bearer ' + admin.token)
 
+            assert.strictEqual(Array.isArray(response.body), true);
             assert.strictEqual(typeof response.body[0].total_amount === 'number', true);
             assert.strictEqual(typeof response.body[0].number_of_transactions === 'number', true);
             assert.strictEqual(typeof response.body[0].currency === 'string', true);
@@ -276,10 +277,53 @@ describe('Integration - /payments', function () {
 
     describe('GET /get-merchant', function () {
 
+        it('should return the number of merchants', async function () {
+            const response = await request(app)
+                .get(`/payments/get-merchant`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(Array.isArray(response.body), true);
+            assert.strictEqual(typeof response.body[0].number_of_merchants === 'number', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-merchant`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-merchant`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
+
     });
 
     describe('GET /get-chart-data', function () {
 
+        it('should return the chart data', async function () {
+            const response = await request(app)
+                .get(`/payments/get-chart-data`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(Array.isArray(response), true);
+            assert.strictEqual(typeof response.body[0].number_of_merchants === 'number', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-chart-data`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-chart-data`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
     });
 });
 

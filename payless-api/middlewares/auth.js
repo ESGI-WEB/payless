@@ -29,7 +29,7 @@ module.exports = (roles = null, verifyUsingUserSecret = false, checkReferer = fa
                 user = await userService.findById(merchant_id);
                 if (!user) return res.sendStatus(401);
 
-                if (checkReferer) {
+                if (checkReferer) { // there's also cors check in index.js
                     const origin = req.headers.referer;
                     const authorizedUrl = user.merchant_url;
                     if (!origin.startsWith(process.env.APP_URL) && !origin.startsWith(authorizedUrl)) return res.sendStatus(403);

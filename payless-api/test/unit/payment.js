@@ -11,6 +11,9 @@ const hooks = require("../../hooks/hooks");
 describe('Unit - Payment service', function () {
     let randomUser, transaction;
     beforeEach(async function () {
+        // prevent console.log
+        sinon.stub(console, 'log');
+        sinon.stub(console, 'error');
         sinon.stub(hooks, 'updateOperationOnPaymentDocument');
         sinon.stub(hooks, 'createOperationOnPaymentDocument');
         sinon.stub(hooks, 'updatePaymentDocument');

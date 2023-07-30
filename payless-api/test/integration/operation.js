@@ -11,7 +11,9 @@ const {Op} = require('sequelize');
 
 describe('Integration - /operations', function () {
     beforeEach(async function () {
-
+        // prevent console.log
+        sinon.stub(console, 'log');
+        sinon.stub(console, 'error');
     });
 
     afterEach(function () {

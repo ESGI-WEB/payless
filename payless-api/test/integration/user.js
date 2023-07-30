@@ -17,6 +17,9 @@ describe('Integration - /users', function () {
         sinon.stub(mailerService, 'sendValidationMail')
         sinon.stub(mailerService, 'sendRefusedMail')
         sinon.stub(mailerService, 'sendEmail')
+        // prevent console.log
+        sinon.stub(console, 'log');
+        sinon.stub(console, 'error');
         admin = await User.findOne({where: {role: 'admin'}});
         admin.token = admin.generateToken();
         user = await User.findOne({where: {role: {[Op.not]: 'admin'}}});

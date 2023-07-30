@@ -11,6 +11,9 @@ describe('Unit - User service', function () {
     let transaction;
     beforeEach(async function () {
         transaction = await connection.transaction()
+        // prevent console.log
+        sinon.stub(console, 'log');
+        sinon.stub(console, 'error');
         // mock sendRegistrationMail
         sinon.stub(mailerService, 'sendRegistrationMail')
         sinon.stub(mailerService, 'sendValidationMail')

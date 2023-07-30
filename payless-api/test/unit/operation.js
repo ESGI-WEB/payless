@@ -5,7 +5,9 @@ const sinon = require('sinon');
 
 describe('Unit - Operation service', function () {
     beforeEach(function () {
-
+        // prevent console.log
+        sinon.stub(console, 'log');
+        sinon.stub(console, 'error');
     });
 
     afterEach(function () {

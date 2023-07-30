@@ -309,7 +309,8 @@ describe('Integration - /payments', function () {
                 .set('Authorization', 'Bearer ' + admin.token)
 
             assert.strictEqual(Array.isArray(response.body), true);
-            assert.strictEqual(typeof response.body[0].number_of_merchants === 'number', true);
+            assert.strictEqual(typeof response.body[0].total === 'number', true);
+            assert.strictEqual(typeof response.body[0].date === 'date', true);
         });
 
         it('should return 401 for non-authenticated users', async function () {

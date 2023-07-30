@@ -23,7 +23,7 @@ describe('Integration - /payments', function () {
         refusedMerchant = await User.findOne({where: {role: 'refused'}});
         refusedMerchant.token = refusedMerchant.generateToken();
         // prevent console.log
-        sinon.stub(console, 'log');
+        //sinon.stub(console, 'log');
         sinon.stub(console, 'error');
     });
 
@@ -238,7 +238,40 @@ describe('Integration - /payments', function () {
     });
 
     describe('GET /get-amount-and-number-of-transactions', function () {
+        let currency;
+        beforeEach(function () {
+            currency = "EUR"
+        });
 
+        it('should return the total amount and number of transactions for a merchant', async function () {
+            const response = await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(typeof response.body[0].total_amount === 'number', true);
+            assert.strictEqual(typeof response.body[0].number_of_transactions === 'number', true);
+            assert.strictEqual(typeof response.body[0].currency === 'string', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
+
+        it('should return 400 if the currency is missing', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions`)
+                .set('Authorization', 'Bearer ' + admin.token)
+                .expect(400);
+        });
     });
 
     describe('GET /get-merchant', function () {

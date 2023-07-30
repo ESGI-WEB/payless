@@ -301,6 +301,7 @@ describe('Unit - Payment service', function () {
             assert.strictEqual(result[0].currency, currency);
             assert.strictEqual(typeof result[0].number_of_transactions, 'number');
             assert.strictEqual(typeof result[0].total_amount, 'number');
+            assert.strictEqual(typeof result[0].currency, 'string');
         });
     });
 

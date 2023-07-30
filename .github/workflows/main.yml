@@ -14,7 +14,7 @@ jobs:
 
       - name: Set up Docker Compose
         run: |
-          cp .env.test .env
+          cp payless-api/.env.test payless-api/.env
           docker-compose up -d --build
 
       - name: Run tests with Docker Compose

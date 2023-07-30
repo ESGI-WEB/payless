@@ -24,7 +24,8 @@
     "sequelize": "^6.31.1",
     "sib-api-v3-sdk": "^8.5.0",
     "token": "^0.1.0",
-    "twing": "^6.0.0-alpha.1"
+    "twing": "^6.0.0-alpha.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",

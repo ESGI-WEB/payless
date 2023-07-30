@@ -1,11 +1,9 @@
 const assert = require('assert');
-const userService = require('../../services/user');
 const {User, Payment} = require('../../db/postgres');
 const constants = require('../../helpers/constants');
 const {faker} = require('@faker-js/faker');
 const request = require('supertest');
 const app = require('../../index');
-const mailerService = require("../../services/mailer");
 const sinon = require('sinon');
 const {Op} = require('sequelize');
 

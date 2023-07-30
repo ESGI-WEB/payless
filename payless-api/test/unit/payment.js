@@ -1,11 +1,9 @@
 const constants = require('../../helpers/constants');
 const assert = require('assert');
 const {faker} = require('@faker-js/faker');
-const {Op} = require("sequelize");
 const sinon = require('sinon');
 const {Payment, User, connection, Operation} = require("../../db/postgres");
 const paymentService = require("../../services/payment");
-const userService = require("../../services/user");
 const hooks = require("../../hooks/hooks");
 
 describe('Unit - Payment service', function () {

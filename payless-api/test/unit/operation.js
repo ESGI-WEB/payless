@@ -1,6 +1,5 @@
 const assert = require('assert');
 const {faker} = require('@faker-js/faker');
-const {Op} = require("sequelize");
 const sinon = require('sinon');
 const {Operation, Payment, User} = require("../../db/postgres");
 const operationService = require("../../services/operation");

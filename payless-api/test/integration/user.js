@@ -1,5 +1,4 @@
 const assert = require('assert');
-const userService = require('../../services/user');
 const {User} = require('../../db/postgres');
 const constants = require('../../helpers/constants');
 const {faker} = require('@faker-js/faker');

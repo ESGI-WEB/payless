@@ -3,13 +3,18 @@ const assert = require('assert');
 const {faker} = require('@faker-js/faker');
 const {Op} = require("sequelize");
 const sinon = require('sinon');
-const {Payment, User, connection} = require("../../db/postgres");
+const {Payment, User, connection, Operation} = require("../../db/postgres");
 const paymentService = require("../../services/payment");
 const userService = require("../../services/user");
+const hooks = require("../../hooks/hooks");
 
 describe('Unit - Payment service', function () {
     let randomUser, transaction;
     beforeEach(async function () {
+        sinon.stub(hooks, 'updateOperationOnPaymentDocument');
+        sinon.stub(hooks, 'createOperationOnPaymentDocument');
+        sinon.stub(hooks, 'updatePaymentDocument');
+        sinon.stub(hooks, 'createPaymentDocument');
         transaction = await connection.transaction();
         randomUser = await User.findOne({where: {role: 'merchant'}});
     });
@@ -108,13 +113,138 @@ describe('Unit - Payment service', function () {
         });
     });
 
-    describe('#validate()', function () {
+    describe('#validate()',  function () {
+        const globalFetch = global.fetch;
+        this.timeout(6 * 1000);
 
+        beforeEach(function () {
+            const fetchStub = sinon.stub();
 
+            fetchStub.resolves({
+                status: 202,
+                json: sinon.stub().resolves({}),
+            });
+            global.fetch = fetchStub;
+        });
+        afterEach(function () {
+            global.fetch = globalFetch;
+        });
+
+        it('should validate a payment (pass it in processing status with new operation)', async function () {
+            const payment = await paymentService.create(getPaymentData(randomUser));
+            const validatedPayment = await paymentService.validate(payment.uuid, {
+                card_number: '1234123412341234',
+                cardholder_name: 'John Doe',
+                expiration_date: '12/'+(new Date().getFullYear()+1),
+                cvv: '123',
+            });
+            const [operation] = await validatedPayment.getOperations();
+
+            assert.strictEqual(validatedPayment instanceof Payment, true);
+            assert.strictEqual(validatedPayment.status, 'processing');
+            assert.strictEqual(operation instanceof Operation, true);
+            assert.strictEqual(operation.type, 'capture');
+            assert.strictEqual(operation.status, 'pending');
+        });
+
+        it('should return error if missing fields', async function () {
+            const payment = await paymentService.create(getPaymentData(randomUser));
+            const requiredData = {
+                card_number: '1234123412341234',
+                cardholder_name: 'John Doe',
+                expiration_date: '12/'+(new Date().getFullYear()+1),
+                cvv: '123',
+            };
+            for (const field in requiredData) {
+                const dataWithMissingField = {...requiredData};
+                delete dataWithMissingField[field];
+                await assert.rejects(async () => {
+                    await paymentService.validate(payment.uuid, dataWithMissingField);
+                });
+            }
+        });
+
+        it('should return error if invalid fields', async function () {
+            const payment = await paymentService.create(getPaymentData(randomUser));
+            const invalidData = {
+                card_number: '1234123412341234',
+                cardholder_name: 'John Doe',
+                expiration_date: '12/'+(new Date().getFullYear()+1),
+                cvv: '123',
+            };
+            for (const field in invalidData) {
+                if (field === 'cardholder_name') continue;
+                const dataWithInvalidField = {...invalidData};
+                dataWithInvalidField[field] = 'invalid';
+                await assert.rejects(async () => {
+                    await paymentService.validate(payment.uuid, dataWithInvalidField);
+                });
+            }
+        });
     });
 
     describe('#refund()', function () {
+        this.timeout(6 * 1000);
+        const globalFetch = global.fetch;
+        let paymentToRefund, validatedOperation;
+        beforeEach(async function () {
+            const fetchStub = sinon.stub();
 
+            fetchStub.resolves({
+                status: 202,
+                json: sinon.stub().resolves({}),
+            });
+            global.fetch = fetchStub;
+
+            paymentToRefund = await Payment.create({...getPaymentData(randomUser), total: 100, status: 'succeeded'});
+            validatedOperation = await paymentToRefund.createOperation({
+                type: 'capture',
+                amount: paymentToRefund.total,
+                last4: faker.number.int({min: 1000, max: 9999}),
+                status: 'succeeded',
+            });
+        });
+        afterEach(async function () {
+            global.fetch = globalFetch;
+            await paymentToRefund.destroy();
+            await validatedOperation.destroy();
+        });
+
+        it('should fully refund a payment', async function () {
+            await paymentService.refund(paymentToRefund.id, {amount: paymentToRefund.total});
+            const operations = await paymentToRefund.getOperations();
+            const refundedOperation = operations.find(operation => operation.type === 'refund');
+
+            assert.strictEqual(refundedOperation instanceof Operation, true);
+            assert.strictEqual(refundedOperation.type, 'refund');
+            assert.strictEqual(refundedOperation.status, 'pending');
+            assert.strictEqual(refundedOperation.amount, paymentToRefund.total);
+            assert.strictEqual(operations.length, 2);
+        });
+        it('should partially refund a payment', async function () {
+            await paymentService.refund(paymentToRefund.id, {amount: 20});
+            const operations = await paymentToRefund.getOperations();
+            const refundedOperation = operations.find(operation => operation.type === 'refund');
+
+            assert.strictEqual(paymentToRefund instanceof Payment, true);
+            assert.strictEqual(refundedOperation instanceof Operation, true);
+            assert.strictEqual(refundedOperation.type, 'refund');
+            assert.strictEqual(refundedOperation.status, 'pending');
+            assert.strictEqual(+refundedOperation.amount, 20);
+            assert.strictEqual(operations.length, 2);
+        });
+        it('should return error if invalid amount', async function () {
+            await assert.rejects(async () => {
+                await paymentService.refund(paymentToRefund.id, {amount: -4});
+            });
+
+        });
+        it('should return error if to high amount', async function () {
+            await assert.rejects(async () => {
+                await paymentService.refund(paymentToRefund.id, {amount: 400});
+            });
+
+        });
     });
 
     describe('#format()', function () {

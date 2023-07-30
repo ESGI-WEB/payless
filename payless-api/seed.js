@@ -115,14 +115,14 @@ const seed = async () => {
                     await payment.createOperation({
                         type: 'capture',
                         amount: payment.total,
-                        last4: payment.currency,
+                        last4: faker.number.int({min: 1000, max: 9999}),
                     });
                     break;
                 case 'succeeded':
                     await payment.createOperation({
                         type: 'capture',
                         amount: payment.total,
-                        last4: payment.currency,
+                        last4: faker.number.int({min: 1000, max: 9999}),
                         status: 'succeeded',
                     });
                     const randomPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
@@ -130,7 +130,7 @@ const seed = async () => {
                         await payment.createOperation({
                             type: 'refund',
                             amount: randomPossibility === 'partial_refund' ? payment.total / 2 : payment.total,
-                            last4: payment.currency,
+                            last4: faker.number.int({min: 1000, max: 9999}),
                             status: 'succeeded',
                         });
                     }

@@ -22,8 +22,7 @@ jobs:
           cp payless-api/.env.test payless-api/.env
           cp fake-psp/.env.example fake-psp/.env
           cp payless-backoffice/.env.example payless-backoffice/.env
-          docker-compose up api -d --build
-          docker-compose up db -d --build
+          docker-compose up -d --build
 
       - name: Run tests with Docker Compose
         run: docker-compose run api npm test 

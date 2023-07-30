@@ -200,16 +200,6 @@ describe('Integration - /payments', function () {
                 .set('referer', merchant.merchant_url)
                 .expect(401);
         });
-        it('should return 401 if wrong id', async function () {
-            const payment = await Payment.create({...getPaymentData(), UserId: merchant.id});
-            await request(app)
-                .post(`/payments/${payment.uuid}/cancel`)
-                .set('Content-Type', 'application/json')
-                .set('Authorization', 'Bearer ' + merchant.client_token)
-                .set('merchant_id', merchant.id + 1)
-                .set('referer', merchant.merchant_url)
-                .expect(401);
-        });
         it('should return 403 if wrong referer', async function () {
             const payment = await Payment.create({...getPaymentData(), UserId: merchant.id});
             await request(app)

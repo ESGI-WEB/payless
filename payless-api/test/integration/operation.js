@@ -15,7 +15,10 @@ describe('Integration - /operations', function () {
         // prevent console.log
         sinon.stub(console, 'log');
         sinon.stub(console, 'error');
-        sinon.stub(Payment, 'notify');
+        // TODO
+        // sinon.stub(Payment, 'notify');
+        // token = jwt.sign({ operationId: operation.uuid }, process.env.JWT_SECRET);
+
     });
 
     afterEach(function () {

@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      - name: Create external network
+        run: |
+          docker network create fake-psp
+          docker network create payless-network
 
       - name: Set up Docker Compose
         run: |

@@ -284,20 +284,97 @@ describe('Unit - Payment service', function () {
     });
 
     describe('#findAll()', function () {
-
+        it('should find all payments', async function () {
+            this.timeout(6 * 1000)
+            const payments = await paymentService.findAll();
+            assert.strictEqual(payments instanceof Array, true);
+            assert.strictEqual(payments.length > 0, true);
+        });
     });
 
     describe('#getAmountAndNumberOfTransactions()', function () {
-
+        it('should get amount and number of transactions for a given currency', async function () {
+            const currency =  constants.CURRENCIES[Math.floor(Math.random() * constants.CURRENCIES.length)];
+            const result = await paymentService.getAmountAndNumberOfTransactions(currency);
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length, 1);
+            assert.strictEqual(result[0].currency, currency);
+            assert.strictEqual(typeof result[0].number_of_transactions, 'number');
+            assert.strictEqual(typeof result[0].total_amount, 'number');
+            assert.strictEqual(typeof result[0].currency, 'string');
+        });
     });
 
     describe('#getMerchant()', function () {
+        it('should get number of merchants for admin', async function () {
+            const adminUser = await User.findOne({ where: { role: 'admin' } });
+            const result = await paymentService.getMerchant(adminUser);
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length, 1);
+            assert.strictEqual(result[0].number_of_merchants > 0, true);
+        });
 
+        it('should get number of customers for merchant', async function () {
+            const merchantUser = await User.findOne({ where: { role: 'merchant' } });
+            const result = await paymentService.getMerchant(merchantUser);
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length, 1);
+            assert.strictEqual(result[0].number_of_customers > 0, true);
+        });
+
+        it('should return an empty array for other roles', async function () {
+            const merchantToValidateUser = await User.findOne({ where: { role: 'merchant-to-validate' } });
+            const result = await paymentService.getMerchant(merchantToValidateUser);
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length, 0);
+        });
     });
 
     describe('#getChartData()', function () {
+        it('should get chart data for a merchant', async function () {
+            const merchantUser = await User.findOne({ where: { role: 'merchant' } });
 
+            const criteria = { startDate: '2023-01-01', endDate: '2024-07-30', time: 'month' };
+
+            const result = await paymentService.getChartData(criteria, merchantUser);
+
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length > 0, true);
+
+            for (const data of result) {
+                assert.strictEqual(typeof data.date, 'string');
+                assert.strictEqual(typeof data.total, 'number');
+            }
+        });
+
+        it('should get chart data for an admin', async function () {
+            const adminUser = await User.findOne({ where: { role: 'admin' } });
+
+            const criteria = { startDate: '2023-01-01', endDate: '2024-07-30', time: 'month' };
+
+            const result = await paymentService.getChartData(criteria, adminUser);
+
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length > 0, true);
+
+            for (const data of result) {
+                assert.strictEqual(typeof data.date, 'string');
+                assert.strictEqual(typeof data.total, 'number', );
+            }
+        });
+
+        it('should return an empty array for other roles', async function () {
+            const merchantToValidateUser = await User.findOne({ where: { role: 'merchant-to-validate' } });
+
+            const criteria = { startDate: '2023-01-01', endDate: '2024-07-30', time: 'month' };
+
+            const result = await paymentService.getChartData(criteria, merchantToValidateUser);
+
+            assert.strictEqual(Array.isArray(result), true);
+            assert.strictEqual(result.length, 0);
+        });
     });
+
 });
 
 

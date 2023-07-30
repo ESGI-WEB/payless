@@ -228,15 +228,93 @@ describe('Integration - /payments', function () {
     });
 
     describe('GET /get-amount-and-number-of-transactions', function () {
+        let currency;
+        beforeEach(function () {
+            currency = constants.CURRENCIES[Math.floor(Math.random() * constants.CURRENCIES.length)]
+        });
 
+        it('should return the total amount and number of transactions for a merchant', async function () {
+            const response = await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(Array.isArray(response.body), true);
+            assert.strictEqual(typeof response.body[0].total_amount === 'number', true);
+            assert.strictEqual(typeof response.body[0].number_of_transactions === 'number', true);
+            assert.strictEqual(typeof response.body[0].currency === 'string', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions?currency=${currency}`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
+
+        it('should return 400 if the currency is missing', async function () {
+            await request(app)
+                .get(`/payments/get-amount-and-number-of-transactions`)
+                .set('Authorization', 'Bearer ' + admin.token)
+                .expect(400);
+        });
     });
 
     describe('GET /get-merchant', function () {
+
+        it('should return the number of merchants', async function () {
+            const response = await request(app)
+                .get(`/payments/get-merchant`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(Array.isArray(response.body), true);
+            assert.strictEqual(typeof response.body[0].number_of_merchants === 'number', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-merchant`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-merchant`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
 
     });
 
     describe('GET /get-chart-data', function () {
 
+        it('should return the chart data', async function () {
+            const response = await request(app)
+                .get(`/payments/get-chart-data`)
+                .set('Authorization', 'Bearer ' + admin.token)
+
+            assert.strictEqual(Array.isArray(response.body), true);
+            assert.strictEqual(typeof response.body[0].total === 'number', true);
+            assert.strictEqual(typeof response.body[0].date === 'string', true);
+        });
+
+        it('should return 401 for non-authenticated users', async function () {
+            await request(app)
+                .get(`/payments/get-chart-data`)
+                .expect(401);
+        });
+
+        it('should return 403 for non-admin users', async function () {
+            await request(app)
+                .get(`/payments/get-chart-data`)
+                .set('Authorization', 'Bearer ' + merchant.token)
+                .expect(403);
+        });
     });
 });
 

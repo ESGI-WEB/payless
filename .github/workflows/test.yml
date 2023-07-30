@@ -15,6 +15,8 @@ jobs:
       - name: Set up Docker Compose
         run: |
           cp payless-api/.env.test payless-api/.env
+          cp fake-psp/.env.example fake-psp/.env
+          cp payless-backoffice/.env.example payless-backoffice/.env
           docker-compose up api -d --build
           docker-compose up db -d --build
 

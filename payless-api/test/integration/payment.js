@@ -310,7 +310,7 @@ describe('Integration - /payments', function () {
 
             assert.strictEqual(Array.isArray(response.body), true);
             assert.strictEqual(typeof response.body[0].total === 'number', true);
-            assert.strictEqual(typeof response.body[0].date === 'date', true);
+            assert.strictEqual(typeof response.body[0].date === 'string', true);
         });
 
         it('should return 401 for non-authenticated users', async function () {

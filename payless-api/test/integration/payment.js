@@ -240,7 +240,7 @@ describe('Integration - /payments', function () {
     describe('GET /get-amount-and-number-of-transactions', function () {
         let currency;
         beforeEach(function () {
-            currency = "EUR"
+            currency = constants.CURRENCIES[Math.floor(Math.random() * constants.CURRENCIES.length)]
         });
 
         it('should return the total amount and number of transactions for a merchant', async function () {
@@ -308,7 +308,7 @@ describe('Integration - /payments', function () {
                 .get(`/payments/get-chart-data`)
                 .set('Authorization', 'Bearer ' + admin.token)
 
-            assert.strictEqual(Array.isArray(response), true);
+            assert.strictEqual(Array.isArray(response.body), true);
             assert.strictEqual(typeof response.body[0].number_of_merchants === 'number', true);
         });
 

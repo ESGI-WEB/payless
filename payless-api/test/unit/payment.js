@@ -294,7 +294,7 @@ describe('Unit - Payment service', function () {
 
     describe('#getAmountAndNumberOfTransactions()', function () {
         it('should get amount and number of transactions for a given currency', async function () {
-            const currency =  'EUR';
+            const currency =  constants.CURRENCIES[Math.floor(Math.random() * constants.CURRENCIES.length)];
             const result = await paymentService.getAmountAndNumberOfTransactions(currency);
             assert.strictEqual(Array.isArray(result), true);
             assert.strictEqual(result.length, 1);

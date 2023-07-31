@@ -1,13 +1,12 @@
 const assert = require('assert');
-const userService = require('../../services/user');
 const {User} = require('../../db/postgres');
 const {faker} = require('@faker-js/faker');
 const request = require('supertest');
 const app = require('../../index');
 const mailerService = require("../../services/mailer");
 const sinon = require('sinon');
-const {readFileSync} = require("fs");
 const constants = require("../../helpers/constants");
+const {join} = require("path");
 
 describe('Integration - security', function () {
     beforeEach(async function () {
@@ -19,6 +18,7 @@ describe('Integration - security', function () {
         sinon.stub(mailerService, 'sendRefusedMail')
         sinon.stub(mailerService, 'sendEmail')
 
+
     });
 
     afterEach(function () {
@@ -26,6 +26,36 @@ describe('Integration - security', function () {
     });
 
     describe('POST /register', function () {
+        it('should register a new user', async function () {
+            const userData = getUserData();
+            const filePath = join(__dirname, 'test.pdf');
+
+
+            await request(app)
+                .post('/register')
+                .attach('kbis', filePath)
+                .field('company_name', userData.company_name)
+                .field('zip_code', userData.zip_code)
+                .field('city', userData.city)
+                .field('address', userData.address)
+                .field('country', userData.country)
+                .field('merchant_url', userData.merchant_url)
+                .field('confirmation_url', userData.confirmation_url)
+                .field('cancel_url', userData.cancel_url)
+                .field('webhook_url', userData.webhook_url)
+                .field('currency', userData.currency)
+                .field('email', userData.email)
+                .field('password', userData.password)
+                .expect(200)
+                .then(response => {
+                    assert.strictEqual(response.body.company_name, userData.company_name);
+                    assert.strictEqual(response.body.email, userData.email);
+                    assert(response.body.token);
+                });
+        });
+
+
+
     it('should return error when kbis is missing', async function () {
             const fakeUser = {
                 email: faker.internet.email(),
@@ -42,6 +72,8 @@ describe('Integration - security', function () {
 
     });
 
+
+
     describe('POST /login', function () {
         it('should login with valid credentials', async function () {
             const fakeUser = {
@@ -49,20 +81,21 @@ describe('Integration - security', function () {
                 password: faker.internet.password(),
             };
 
-            const stub = sinon.stub(userService, 'findOneBy').resolves(new User(fakeUser));
-            const passwordStub = sinon.stub(User.prototype, 'checkPassword').resolves(true);
+            await User.create({
+                email: fakeUser.email,
+                password: 'Azerty1*',
+            });
 
             await request(app)
                 .post('/login')
                 .send({
                     email: fakeUser.email,
-                    password: fakeUser.password,
+                    password: 'Azerty1*',
                 })
                 .expect(200)
-                .then(response => { assert(response.body.token); });
-
-            assert(stub.calledOnce);
-            assert(passwordStub.calledOnce);
+                .then(response => {
+                    assert(response.body.token);
+                });
         });
 
         it('should return error for invalid email', async function () {
@@ -71,8 +104,6 @@ describe('Integration - security', function () {
                 password: faker.internet.password(),
             };
 
-            sinon.stub(userService, 'findOneBy').resolves(null);
-
             await request(app)
                 .post('/login')
                 .send({
@@ -82,39 +113,48 @@ describe('Integration - security', function () {
                 .expect(401);
         });
 
-        it('should return error for invalid password', async function () {
-            const fakeUser = {
-                email: faker.internet.email(),
-                password: faker.internet.password(),
-            };
+        describe('POST /login', function () {
+            it('should return error for invalid password', async function () {
+                const validPassword = getUserData().password;
 
-            sinon.stub(userService, 'findOneBy').resolves(new User(fakeUser));
-            sinon.stub(User.prototype, 'checkPassword').resolves(false);
+                const user = await User.create({
+                    email: faker.internet.email(),
+                    password: validPassword,
+                });
 
-            await request(app)
-                .post('/login')
-                .send({
-                    email: fakeUser.email,
-                    password: fakeUser.password,
-                })
-                .expect(401);
+                const fakeUser = {
+                    email: user.email,
+                    password: 'InvalidPassword',
+                };
+
+                await request(app)
+                    .post('/login')
+                    .send({
+                        email: fakeUser.email,
+                        password: fakeUser.password,
+                    })
+                    .expect(401);
+            });
         });
-
     });
+
 
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const getUserData = () => {
+    return {
+        company_name: faker.company.name(),
+        zip_code: faker.location.zipCode(),
+        city: faker.location.city(),
+        address: faker.location.streetAddress(),
+        country: faker.location.country(),
+        merchant_url: faker.internet.url(),
+        confirmation_url: faker.internet.url(),
+        cancel_url: faker.internet.url(),
+        webhook_url: faker.internet.url(),
+        currency: constants.CURRENCIES[0],
+        email: 'new-user' + faker.internet.email(),
+        password: 'Azerty1*',
+        kbis: 'test.pdf',
+    }
+}
